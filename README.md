@@ -7,7 +7,9 @@ It's a single `index.html` file with no dependencies and no build step.
 ## Features
 
 - **Game view**: colour-coded notes scroll toward a hit line, with a fingering diagram for the current and upcoming notes. Each note is graded Perfect, Good, OK, Missed or Wrong, with combo and timing stats.
-- **Notation view**: a staff with a moving playhead. Tap a bar to set the loop start and another to set the end.
+- **Fingering view**: the staff on top with note letters, and below it one lane per key (octave key, left hand, right hand, side and pinky keys). Blocks scroll toward circles that light up when that key should be down, so the fingers line up with the notes as they arrive.
+- **Notation view**: a staff with a moving playhead and optional note letters above or below. Tap a bar to set the loop start and another to set the end.
+- **Step through**: move one note at a time with the Prev/Next buttons or the arrow keys, hearing each note. Tick "Advance when I play it" to move on whenever you play the note shown.
 - **Practice tools**: speed from 25% to 150%, bar-range looping, count-in, metronome, "Hear the lick", "Wait for me" mode, and swing.
 - **Practice all keys**: run a lick around the circle of 4ths, up by semitone or whole tone, or down in 4ths. The register refits to your horn each time.
 - **Horn selection**: alto, tenor, soprano, baritone or concert pitch. Notation, note names and fingerings follow the horn you choose.
@@ -66,7 +68,8 @@ Timing is snapped to a sixteenth or triplet-eighth grid so the notation stays re
 |-----|--------|
 | `Space` | Start / pause |
 | `Esc` | Stop |
-| `V` | Switch between game and notation view |
+| `V` | Cycle through game, fingering and notation views |
+| `←` / `→` | Step to the previous / next note |
 
 ## Limitations
 
