@@ -179,7 +179,7 @@ dialog kbd{background:var(--bg2);border:1px solid var(--line);border-radius:5px;
         <select id="instr" class="grow"></select></div>
       <div class="row"><span class="lab">Key</span>
         <select id="key"></select>
-        <select id="oct"><option value="-1">Octave −1</option><option value="0">Octave 0</option><option value="1">Octave +1</option></select></div>
+        <select id="oct"><option value="-2">Octave −2</option><option value="-1">Octave −1</option><option value="0">Octave 0</option><option value="1">Octave +1</option><option value="2">Octave +2</option></select></div>
       <div class="row"><span class="lab">Practice all keys</span>
         <select id="cycle"><option value="off">Off</option><option value="5">Up in 4ths (cycle)</option><option value="1">Up by semitone</option><option value="2">Up by whole tone</option><option value="7">Down in 4ths</option></select></div>
       <div class="row">
@@ -499,21 +499,22 @@ function noteOff(snd){if(live.m===snd)live.m=null;}
 function writtenRange(sh){let lo=999,hi=-1;for(const n of notes){const w=n.m+sh+TRANS[S.instr];if(w<lo)lo=w;if(w>hi)hi=w;}return[lo,hi];}
 function fitOct(prefMean){
   if(S.instr==='concert')return S.oct;
-  let best=null,bs=1e9;
   const mean=notes.reduce((a,n)=>a+n.m,0)/Math.max(1,notes.length);
-  for(let o=-3;o<=2;o++){
-    const[lo,hi]=writtenRange(S.key+12*o);if(lo<58||hi>85)continue;
-    const sc=Math.abs(mean+S.key+12*o+TRANS[S.instr]-(prefMean||71));
-    if(sc<bs){bs=sc;best=o;}
+  let best=S.oct,bc=1e9,bs=1e9;
+  for(let o=-4;o<=3;o++){
+    const sh=S.key+12*o;let cnt=0;
+    for(const n of notes){const w=n.m+sh+TRANS[S.instr];if(w<58||w>85)cnt++;}
+    const sc=Math.abs(mean+sh+TRANS[S.instr]-(prefMean||71));
+    if(cnt<bc||(cnt===bc&&sc<bs)){bc=cnt;bs=sc;best=o;}
   }
-  return best===null?S.oct:best;
+  return best;
 }
-function autoFitIfNeeded(){const[lo,hi]=writtenRange(shift());if(S.instr!=='concert'&&(lo<58||hi>85)){S.oct=clamp(fitOct(),-1,1);}}
+function autoFitIfNeeded(){const[lo,hi]=writtenRange(shift());if(S.instr!=='concert'&&(lo<58||hi>85)){S.oct=clamp(fitOct(),-2,2);}}
 function advanceKey(){
   if(S.cycle==='off')return;
   const prevMean=notes.reduce((a,n)=>a+n.m,0)/Math.max(1,notes.length)+shift()+TRANS[S.instr];
   const step=+S.cycle;S.key=((S.key+(step>6?step-12:step))%12+12)%12;
-  if(S.instr!=='concert'){S.oct=clamp(fitOct(prevMean-TRANS[S.instr]*0+0),-1,1);}
+  if(S.instr!=='concert'){S.oct=clamp(fitOct(prevMean-TRANS[S.instr]*0+0),-2,2);}
   saveS();buildNotation();syncUI(true);toast('Key: '+keyLabel(S.key));
 }
 const keyLabel=k=>(S.sharps?KEYNAME_S:KEYNAME_F)[(song.tonic+k)%12];
@@ -688,10 +689,12 @@ function drawRest(it,y0,g){
 function markNotation(i){const els=nhEls[i];if(!els)return;const n=notes[i];els.forEach(e=>{const h=e.classList.contains('hollow');e.setAttribute('class','nh'+(h?' hollow':'')+(n.st===1?' hit':n.st===2?' miss':(i===nextHL?' next':'')));});}
 function refreshNotationMarks(){notes.forEach(n=>markNotation(n.i));}
 function setNextHL(i){if(i===nextHL)return;const old=nextHL;nextHL=i;if(old>=0)markNotation(old);if(i>=0)markNotation(i);}
+function oorCount(){if(S.instr==='concert'||!notes.length)return 0;let c=0;for(const n of notes){const w=wr(n);if(w<58||w>85)c++;}return c;}
 function updateLoopMarks(){
   barEls.forEach(e=>{const b=+e.dataset.bar;e.classList.toggle('inloop',b>=loopA&&b<=loopB&&!(loopA===1&&loopB===nBars));});
   $('#loopA').value=loopA;$('#loopB').value=loopB;$('#loopA').max=nBars;$('#loopB').max=nBars;
-  $('#loopInfo').textContent=(loopA===1&&loopB===nBars)?`${nBars} bar${nBars>1?'s':''}`:`Loop: bars ${loopA}–${loopB} of ${nBars}`;
+  const oc=oorCount();
+  $('#loopInfo').textContent=((loopA===1&&loopB===nBars)?`${nBars} bar${nBars>1?'s':''}`:`Loop: bars ${loopA}–${loopB} of ${nBars}`)+(oc?` · ⚠ ${oc} note${oc>1?'s':''} outside your horn's range — try “Fit to my horn” or the Octave menu`:'');
 }
 function updatePlayhead(){
   if(!phEl||!anchors.length)return;
@@ -759,6 +762,7 @@ function drawGame(){
     if(n.st===1||active||n.i===curIdx){c.shadowColor=pcColor(w,1);c.shadowBlur=n.st===1?14:10;}
     c.fillStyle=fill;rr(c,x0,y,wd,h,Math.min(5,h/2));c.fill();
     c.restore();
+    if(S.instr!=='concert'&&(w<58||w>85)){c.strokeStyle='#f87171';c.lineWidth=1.5;c.setLineDash([3,3]);rr(c,x0,y,wd,h,Math.min(5,h/2));c.stroke();c.setLineDash([]);c.lineWidth=1;}
     if(n.st===1){c.strokeStyle='#fff';c.lineWidth=2;rr(c,x0,y,wd,h,Math.min(5,h/2));c.stroke();c.lineWidth=1;}
     else if(n.i===curIdx){c.strokeStyle='rgba(255,255,255,.85)';c.lineWidth=1.5;rr(c,x0,y,wd,h,Math.min(5,h/2));c.stroke();c.lineWidth=1;}
     if(wd>20&&h>10){c.fillStyle=n.st===2?'rgba(255,255,255,.4)':'#10131a';c.font=`bold ${Math.min(13,h-2)}px system-ui`;c.textBaseline='middle';c.fillText(S.instr==='concert'?nameOf(w):letterOf(w),x0+5,y+h/2+.5);}
@@ -1196,7 +1200,7 @@ bind('#latency',e=>{S.latency=+e.target.value;$('#latVal').textContent=S.latency
 bind('#loopA',e=>{loopA=clamp(+e.target.value||1,1,nBars);if(loopB<loopA)loopB=loopA;updateLoopMarks();if(!T.playing)T.pos=loopStart();},'change');
 bind('#loopB',e=>{loopB=clamp(+e.target.value||nBars,1,nBars);if(loopA>loopB)loopA=loopB;updateLoopMarks();},'change');
 bind('#btnLoopClear',()=>{loopA=1;loopB=nBars;updateLoopMarks();if(!T.playing)T.pos=loopStart();},'click');
-bind('#btnFit',()=>{if(S.instr==='concert'){toast('Pick your horn first.');return;}const o=fitOct();const[lo,hi]=writtenRange(S.key+12*o);S.oct=clamp(o,-1,1);buildNotation();syncUI();const[l2,h2]=writtenRange(shift());toast(l2<58||h2>85?'Still outside the horn’s written range (Bb3–C♯6).':'Fitted to your horn.');},'click');
+bind('#btnFit',()=>{if(S.instr==='concert'){toast('Pick your horn first.');return;}const o=fitOct();const[lo,hi]=writtenRange(S.key+12*o);S.oct=clamp(o,-2,2);buildNotation();syncUI();const[l2,h2]=writtenRange(shift());toast(l2<58||h2>85?'Still outside the horn’s written range (Bb3–C♯6).':'Fitted to your horn.');},'click');
 bind('#btnStart',()=>{T.playing?pausePlay():startPlay();},'click');
 bind('#btnPause',pausePlay,'click');
 bind('#btnStop',stopPlay,'click');
