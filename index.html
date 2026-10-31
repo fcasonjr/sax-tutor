@@ -160,6 +160,9 @@ dialog kbd{background:var(--bg2);border:1px solid var(--line);border-radius:5px;
         <label><input type="checkbox" id="hear"> Hear the lick</label>
         <label><input type="checkbox" id="wait"> Wait for me</label>
       </div>
+      <div class="row"><span class="lab">Note letters</span>
+        <select id="letters"><option value="below">Below staff</option><option value="above">Above staff</option><option value="off">Off</option></select>
+        <span class="small mut">(notation view)</span></div>
       <div class="row"><span class="lab">Swing <b id="swingVal">50%</b></span>
         <input class="grow" type="range" id="swing" min="50" max="75" step="1" value="50"></div>
     </div>
@@ -242,7 +245,7 @@ const LET_S=[0,0,1,1,2,3,3,4,4,5,5,6], ACC_S=[0,1,0,1,0,0,1,0,1,0,1,0];
 const PERF=50,GOOD=100,OKW=160;
 
 /* ---------- settings ---------- */
-const S={instr:'alto',key:0,oct:0,speed:100,countIn:1,metro:true,hear:true,wait:false,ignoreOct:false,swing:50,latency:0,sharps:false,view:'game',cycle:'off',midiOffset:0,song:'ii-v-i'};
+const S={instr:'alto',key:0,oct:0,speed:100,countIn:1,metro:true,hear:true,wait:false,ignoreOct:false,swing:50,latency:0,sharps:false,letters:'below',view:'game',cycle:'off',midiOffset:0,song:'ii-v-i'};
 try{Object.assign(S,JSON.parse(localStorage.getItem('saxtutor.s')||'{}'))}catch(e){}
 S.swing=50; // always start straight
 const saveS=()=>{try{localStorage.setItem('saxtutor.s',JSON.stringify(S))}catch(e){}};
@@ -534,7 +537,7 @@ let nhEls=[],anchors=[],sysInfo=[],nextHL=-1,phEl=null,barEls=[];
 function buildNotation(){
   const host=$('#notation');if(!song){return;}
   const W=Math.max(320,$('#notationWrap').clientWidth-2||700);
-  const g=9,leftW=58,rpad=14,sysH=150,top=62;
+  const g=9,leftW=58,rpad=14,sysH=S.letters==='off'?150:162,top=S.letters==='above'?80:62;
   const bars=[];for(let b=0;b<nBars;b++)bars.push({items:[]});
   const flat=[];
   function addSpan(type,s,e,ni){
@@ -547,7 +550,7 @@ function buildNotation(){
   let cur=0;
   for(const n of notes){if(n.s>cur)addSpan('rest',cur,n.s,-1);addSpan('note',n.s,n.e,n.i);cur=n.e;}
   if(cur<nBars*bu)addSpan('rest',cur,nBars*bu,-1);
-  for(let i=0;i<flat.length-1;i++){const a=flat[i],b=flat[i+1];if(a.type==='note'&&b.type==='note'&&a.ni===b.ni)a.tieNext=true;}
+  for(let i=0;i<flat.length-1;i++){const a=flat[i],b=flat[i+1];if(a.type==='note'&&b.type==='note'&&a.ni===b.ni){a.tieNext=true;b.tiePrev=true;}}
   // widths
   bars.forEach(b=>{let md=bu;b.items.forEach(it=>{if(it.d<md)md=it.d;});b.need=Math.max(150,Math.round(34+(bu/md)*21));});
   const avail=W-leftW-rpad;
@@ -571,7 +574,7 @@ function buildNotation(){
       const b=bars[bi],bw=b.need*factor,bx=x;
       svg+=`<rect class="barbg" data-bar="${bi+1}" x="${bx}" y="${y0-34}" width="${bw}" height="${4*g+68}"/>`;
       svg+=`<line x1="${bx+bw}" x2="${bx+bw}" y1="${y0}" y2="${y0+4*g}" stroke="#7a86a8" stroke-width="${bi===nBars-1?2.6:1.2}"/>`;
-      svg+=`<text x="${bx+4}" y="${y0-30}" font-size="10" fill="#8b94b0">${bi+1}</text>`;
+      svg+=`<text x="${bx+4}" y="${S.letters==='above'?y0-52:y0-30}" font-size="10" fill="#8b94b0">${bi+1}</text>`;
       anchors.push({u:warp(bi*bu/12),x:bx,sys:si});
       const its=b.items;
       its.forEach(it=>{it.x=bx+18+(it.o/bu)*(bw-34);anchors.push({u:warp((bi*bu+it.o)/12),x:it.x-8,sys:si});});
@@ -604,6 +607,7 @@ function buildNotation(){
           if(q.sp.acc!==0)h+=`<text x="${cx-rx-11}" y="${cy+4}" font-size="${g*1.7}" text-anchor="middle">${q.sp.acc>0?'♯':'♭'}</text>`;
           h+=`<ellipse class="head" cx="${cx}" cy="${cy}" rx="${rx}" ry="${ry}" transform="rotate(-20 ${cx} ${cy})" stroke-width="1.2"/>`;
           if(q.dot)h+=`<circle cx="${cx+rx+5}" cy="${cy-(q.step%2===0?g/2.2:0)}" r="1.6" fill="currentColor"/>`;
+          if(S.letters!=='off'&&!q.it.tiePrev){const ly=S.letters==='above'?y0-30:y0+4*g+44;h+=`<text x="${cx}" y="${ly}" font-size="14" font-weight="700" text-anchor="middle">${'CDEFGAB'[q.sp.letter]+(q.sp.acc>0?'♯':q.sp.acc<0?'♭':'')}</text>`;}
           q._g=h;q._cx=cx;
         });
         const solo=grp.length===1;
@@ -1016,7 +1020,7 @@ function syncUI(light){
   $('#key').value=S.key;$('#oct').value=S.oct;$('#instr').value=S.instr;$('#cycle').value=S.cycle;
   $('#speed').value=S.speed;$('#speedVal').textContent=S.speed+'%';$('#bpmVal').textContent=Math.round(bpmEff());
   $('#countIn').value=S.countIn;$('#metro').checked=S.metro;$('#hear').checked=S.hear;$('#wait').checked=S.wait;
-  $('#sharps').checked=S.sharps;$('#ignoreOct').checked=S.ignoreOct;
+  $('#sharps').checked=S.sharps;$('#letters').value=S.letters;$('#ignoreOct').checked=S.ignoreOct;
   $('#swing').value=S.swing;$('#swingVal').textContent=S.swing+'%'+(song&&!song.swingable?' (n/a: triplets)':'');
   $('#swing').disabled=!!song&&!song.swingable;
   $('#latency').value=S.latency;$('#latVal').textContent=S.latency+' ms';
@@ -1041,6 +1045,7 @@ bind('#countIn',e=>{S.countIn=+e.target.value;saveS();},'change');
 bind('#metro',e=>{S.metro=e.target.checked;saveS();},'change');
 bind('#hear',e=>{S.hear=e.target.checked;saveS();},'change');
 bind('#wait',e=>{S.wait=e.target.checked;saveS();},'change');
+bind('#letters',e=>{S.letters=e.target.value;buildNotation();saveS();},'change');
 bind('#sharps',e=>{S.sharps=e.target.checked;buildNotation();syncUI();},'change');
 bind('#ignoreOct',e=>{S.ignoreOct=e.target.checked;saveS();},'change');
 bind('#swing',e=>{S.swing=+e.target.value;$('#swingVal').textContent=S.swing+'%';refreshTiming();buildNotation();});
