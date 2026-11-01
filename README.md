@@ -56,7 +56,7 @@ A length carries over to following notes until you change it. Use `|` as an opti
 
 ## Importing files
 
-- **MIDI**: if the file has several tracks, pick the melody track. Where notes overlap, the highest note is kept.
+- **MIDI**: if the file has several tracks, the app picks the most likely melody track (by name, single-note lines and range). You can change it in the track menu. Where notes overlap, the highest note is kept.
 - **MusicXML**: if the file contains a transposition (for example an alto sax part), it is applied automatically.
 - Choose whether the file's pitches are **concert pitch** or **written for your horn**.
 
@@ -73,7 +73,7 @@ Timing is snapped to a sixteenth or triplet-eighth grid so the notation stays re
 
 ## Limitations
 
-- Fingerings cover written Bb3 to C♯6. Palm-key notes above that show a "see your chart" message.
+- Fingerings cover written B♭3 to F♯6, including the palm keys and side E / high F♯ keys. Altissimo notes above that show a "see your chart" message.
 - Imported scores are reduced to a single melodic line. Repeats, voltas and grace notes are ignored.
 - Only partwise MusicXML is supported.
 - Web MIDI and microphone access require a browser and hosting that allow them (a normal web page, not an embedded preview).
