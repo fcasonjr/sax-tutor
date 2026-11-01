@@ -13,6 +13,7 @@ It's a single `index.html` file with no dependencies and no build step.
 - **Practice tools**: speed from 25% to 150%, bar-range looping, count-in, metronome, "Hear the lick", "Wait for me" mode, and swing.
 - **Practice all keys**: run a lick around the circle of 4ths, up by semitone or whole tone, or down in 4ths. The register refits to your horn each time.
 - **Horn selection**: alto, tenor, soprano, baritone or concert pitch. Notation, note names and fingerings follow the horn you choose.
+- **Backing track**: chords appear above the notes in every view, transposed for your horn. The app plays a generated walking bass, piano comping and drums from the chord chart in Swing, Ballad or Bossa styles. For an imported MIDI file with other tracks, it can play the original band instead, and it detects a first-draft chord chart from the piano and bass. Edit chords any time with **✏ Chords…**.
 - **Import**: MIDI (`.mid`), MusicXML (`.xml`, `.musicxml`) and compressed MusicXML (`.mxl`), or type a lick directly.
 - **Progress**: best and last accuracy per lick, and the fastest tempo played at 90% or better. Imported licks and progress are saved in your browser.
 
@@ -35,6 +36,16 @@ Press **Mic** and allow access. Use headphones so the app's own playback isn't p
 ### No instrument connected
 
 For testing, the computer keyboard works as a fallback: `A S D F G H J K` are the white keys, `W E T Y U` the black keys, and `Z` / `X` change octave.
+
+## Chord charts
+
+In **✏ Chords…**, write bars separated by `|`, in concert pitch:
+
+```
+| Dm7 | G7 | Cmaj7 | Cmaj7 |
+```
+
+Two chords in a bar share it evenly. Give beats with a colon (`Dm7:3 G7:1`), or use `%` as its own bar to repeat the previous bar. Common symbols like `m7b5`, `dim7`, `7#9`, `13`, `sus4` and slash chords (`Ebmaj7/G`) are understood. Tick "Repeat the chart to fill the song" to loop a short chart over a longer lick.
 
 ## Typing a lick
 
