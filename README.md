@@ -67,6 +67,7 @@ A length carries over to following notes until you change it. Use `|` as an opti
 
 ## Importing files
 
+- **Fingerstyle / solo arrangements** (one track with melody, chords and bass together, like guitar tabs exported from Guitar Pro): the importer detects this, keeps the top notes as the melody, and plays the notes underneath as the backing band, with chords detected from them.
 - **MIDI**: if the file has several tracks, the app picks the most likely melody track (by name, single-note lines and range). You can change it in the track menu. Where notes overlap, the highest note is kept.
 - **MusicXML**: if the file contains a transposition (for example an alto sax part), it is applied automatically.
 - Choose whether the file's pitches are **concert pitch** or **written for your horn**.

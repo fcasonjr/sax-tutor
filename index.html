@@ -224,6 +224,7 @@ dialog kbd{background:var(--bg2);border:1px solid var(--line);border-radius:5px;
   <div class="row"><span class="lab">File</span>
     <input type="file" id="addFile" accept=".mid,.midi,.xml,.musicxml,.mxl" class="grow"></div>
   <div class="row" id="trackRow" style="display:none"><span class="lab">MIDI track</span><select id="addTrack" class="grow"></select></div>
+  <div class="row" id="splitRow" style="display:none"><label><input type="checkbox" id="addSplit" checked> This track has chords and bass under the melody — keep the top notes as the melody and play the rest as backing</label></div>
   <div class="row" id="bandRow" style="display:none"><label><input type="checkbox" id="addBand" checked> Use the file’s other tracks as the backing band (and detect chords)</label></div>
   <div class="small mut" id="addNote">MIDI, MusicXML (.xml, .musicxml, .mxl) — or type notes below.</div>
   <div class="row" style="align-items:flex-start"><span class="lab">…or type</span>
@@ -1282,6 +1283,30 @@ window.addEventListener('keydown',e=>{
 window.addEventListener('keyup',e=>{const k=e.key.toLowerCase();if(k in KB&&kbDown[k]){kbDown[k]=false;noteOff((kbOct+1)*12+KB[k]-TRANS[S.instr]);}});
 
 /* ---------- import ---------- */
+function polyFrac(notes){
+  const s=[...notes].sort((a,b)=>a.b0-b.b0);if(s.length<2)return 0;let ov=0;
+  for(let k=0;k<s.length-1;k++)if(s[k].b0+s[k].bd>s[k+1].b0+.05)ov++;
+  return ov/s.length;
+}
+function splitVoices(notes,floor){
+  const s=[...notes].sort((a,b)=>a.b0-b.b0||b.m-a.m),cand=[],acc=[];
+  for(let i=0;i<s.length;i++){
+    const n=s[i];let dom=n.m<floor;
+    for(let j=Math.max(0,i-60);!dom&&j<Math.min(s.length,i+61);j++){
+      const o=s[j];if(o===n)continue;
+      if(o.m>n.m&&o.b0<=n.b0+.07&&o.b0+o.bd>n.b0+.07)dom=true;
+    }
+    (dom?acc:cand).push(n);
+  }
+  // drop stray low notes that sit far below the melody around them
+  const keep=[];
+  for(const n of cand){
+    const near=cand.filter(o=>Math.abs(o.b0-n.b0)<=4).map(o=>o.m).sort((a,b)=>a-b);
+    const med=near[Math.floor(near.length/2)];
+    (n.m<med-9?acc:keep).push(n);
+  }
+  return{melody:keep,accomp:acc};
+}
 function pickMelody(tracks){
   let best=0,bs=-1e9;
   tracks.forEach((t,i)=>{
@@ -1384,10 +1409,16 @@ async function unzipXml(buf){
 }
 let parsed=null; // {title,bpm,ts,tracks:[{name,notes}] | notes, applied}
 function openAdd(){
-  parsed=null;$('#bandRow').style.display='none';$('#addTitle').value='';$('#addText').value='';$('#addFile').value='';$('#addErr').textContent='';$('#trackRow').style.display='none';
+  parsed=null;$('#bandRow').style.display='none';$('#splitRow').style.display='none';$('#addTitle').value='';$('#addText').value='';$('#addFile').value='';$('#addErr').textContent='';$('#trackRow').style.display='none';
   $('#addSrc').disabled=false;$('#addNote').textContent='MIDI, MusicXML (.xml, .musicxml, .mxl) — or type notes below.';
   $('#dlgAdd').showModal();
 }
+function updateSplitRow(){
+  if(!parsed||!parsed.tracks){$('#splitRow').style.display='none';return;}
+  const t=parsed.tracks[+$('#addTrack').value];const pf=t?polyFrac(t.notes):0;
+  $('#splitRow').style.display=pf>=.2?'flex':'none';$('#addSplit').checked=pf>=.2;
+}
+$('#addTrack').addEventListener('change',updateSplitRow);
 $('#addFile').addEventListener('change',async e=>{
   const f=e.target.files[0];if(!f)return;$('#addErr').textContent='';
   try{
@@ -1396,7 +1427,7 @@ $('#addFile').addEventListener('change',async e=>{
       const r=parseMidi(buf);parsed={title:f.name.replace(/\.[^.]+$/,''),bpm:r.bpm,ts:r.ts,tracks:r.tracks};
       const sel=$('#addTrack');sel.innerHTML=r.tracks.map((t,i)=>{const ms=t.notes.map(n=>n.m),lo=Math.min(...ms),hi=Math.max(...ms);return `<option value="${i}">${t.name} (${t.notes.length} notes, ${nameOf(lo)}–${nameOf(hi)})${t.drum?' – drums':''}</option>`;}).join('');
       sel.value=pickMelody(r.tracks);
-      $('#trackRow').style.display=r.tracks.length>1?'flex':'none';$('#bandRow').style.display=r.tracks.length>1?'flex':'none';
+      $('#trackRow').style.display=r.tracks.length>1?'flex':'none';$('#bandRow').style.display=r.tracks.length>1?'flex':'none';updateSplitRow();
       $('#addNote').textContent='MIDI loaded. Pick the melody track if needed; the highest note at each moment is used.';
     }else{
       const text=ext==='mxl'?await unzipXml(buf):new TextDecoder().decode(buf);
@@ -1418,24 +1449,31 @@ $('#addOk').addEventListener('click',()=>{
     else throw new Error('Choose a file or type some notes.');
     const src=parsed&&parsed.applied&&!txt?'concert':$('#addSrc').value;
     const sh=TRANS[src];
+    let accomp=null;
+    if(!txt&&parsed&&parsed.tracks&&$('#splitRow').style.display!=='none'&&$('#addSplit').checked){
+      const res=splitVoices(raw,55+sh);raw=res.melody;accomp=res.accomp;
+      if(!raw.length)throw new Error('Couldn’t find a melody in that track.');
+    }
     const units=normalize(raw.map(n=>({b0:n.b0,bd:n.bd,m:n.m-sh})));
     if(!units.length)throw new Error('No usable notes.');
     const ts=[clamp(+$('#addTsN').value||4,1,12),+$('#addTsD').value||4];
     // shift whole thing so first bar starts at 0
     const def={id:'c'+Date.now().toString(36),title:title||'My lick',bpm:clamp(+$('#addBpm').value||100,30,300),ts,tonic:0,units,custom:true};
+    const band={bass:[],keys:[],drum:[]};
+    if(accomp)for(const n of accomp){const m=n.m-sh;band[m<53?'bass':'keys'].push([Math.round(n.b0*48),Math.round((n.b0+n.bd)*48),m,n.v||90]);}
     if(!txt&&parsed&&parsed.tracks&&parsed.tracks.length>1&&$('#addBand').checked){
-      const mi=+$('#addTrack').value,band={bass:[],keys:[],drum:[]};
+      const mi=+$('#addTrack').value;
       parsed.tracks.forEach((t,i)=>{
         if(i===mi||!t.notes.length)return;
         const kind=t.drum?'drum':/bass/i.test(t.name)?'bass':'keys';
         for(const n of t.notes)band[kind].push([Math.round(n.b0*48),Math.round((n.b0+n.bd)*48),n.m,n.v||90]);
       });
-      if(band.bass.length+band.keys.length+band.drum.length){
-        def.band=band;
-        if(band.keys.length||band.bass.length){
-          const bu2=ts[0]*4/ts[1];let mx=0;for(const u of units)if(u.e>mx)mx=u.e;
-          try{def.chart=detectChart(band,bu2,Math.max(1,Math.ceil(mx/(bu2*12))));charts[def.id]={chart:def.chart,repeat:false};saveCharts();}catch(e){}
-        }
+    }
+    if(band.bass.length+band.keys.length+band.drum.length){
+      def.band=band;
+      if(band.keys.length||band.bass.length){
+        const bu2=ts[0]*4/ts[1];let mx=0;for(const u of units)if(u.e>mx)mx=u.e;
+        try{def.chart=detectChart(band,bu2,Math.max(1,Math.ceil(mx/(bu2*12))));charts[def.id]={chart:def.chart,repeat:false};saveCharts();}catch(e){}
       }
     }
     custom.push(def);saveCustom();fillSongSel();$('#dlgAdd').close();loadSong(def);
@@ -1601,7 +1639,7 @@ setView(S.view);
 showProgress();
 requestAnimationFrame(frame);
 
-window.SaxTutor={S,T,P,get notes(){return notes},get song(){return song},noteOn,noteOff,startPlay,stopPlay,parseMidi,pickMelody,parseXML,parseChord,parseChart,detectChart,get plan(){return plan},get chordDisp(){return chordDisp},rebuildPlan,gmKind,parseDSL,normalize,loadSong,buildNotation,fingeringFor,detectPitch,setView,stepNote,get anchors(){return anchors}};
+window.SaxTutor={S,T,P,get notes(){return notes},get song(){return song},noteOn,noteOff,startPlay,stopPlay,parseMidi,pickMelody,polyFrac,splitVoices,parseXML,parseChord,parseChart,detectChart,get plan(){return plan},get chordDisp(){return chordDisp},rebuildPlan,gmKind,parseDSL,normalize,loadSong,buildNotation,fingeringFor,detectPitch,setView,stepNote,get anchors(){return anchors}};
 })();
 </script>
 </body>
