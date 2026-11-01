@@ -108,12 +108,53 @@ dialog kbd{background:var(--bg2);border:1px solid var(--line);border-radius:5px;
 #dlgProg th{color:var(--mut);font-weight:600}
 #dlgProg details{margin-top:10px}
 #dlgProg summary{cursor:pointer;color:var(--mut);font-size:13px}
+html{touch-action:manipulation}
+button,select,label,.cell{-webkit-tap-highlight-color:transparent}
+#app{padding-left:max(12px,env(safe-area-inset-left));padding-right:max(12px,env(safe-area-inset-right))}
+.card h3{user-select:none}
+@media (pointer:coarse){
+  button,select,input[type=number],input[type=text]{min-height:42px}
+  select,input,textarea{font-size:16px}
+  input[type=checkbox]{width:22px;height:22px;flex:none}
+  input[type=range]{height:34px}
+  .row label{min-height:34px}
+  .cell{min-height:32px}
+}
+body.narrow .card h3{cursor:pointer;display:flex;justify-content:space-between;align-items:center;margin-bottom:0}
+body.narrow .card h3::after{content:'▾';font-size:14px;color:var(--mut);transition:transform .15s}
+body.narrow .card.collapsed h3::after{transform:rotate(-90deg)}
+body.narrow .card:not(.collapsed) h3{margin-bottom:8px}
+body.narrow .card.collapsed>*:not(h3){display:none}
 @media (max-width:760px){
+  #dock{position:fixed;left:0;right:0;bottom:0;z-index:30;background:var(--bg);border-top:1px solid var(--line);padding:8px max(10px,env(safe-area-inset-right)) calc(6px + env(safe-area-inset-bottom)) max(10px,env(safe-area-inset-left))}
+  #app{padding-bottom:calc(var(--dockH,110px) + 16px)}
+  #dock #stepRow{margin:0 0 4px!important}
+  #dock #stepRow .small{display:none}
+  #dock #transport{margin:0;gap:6px}
+  #dock #transport .grow{min-width:120px}
+  header{padding:8px 10px;gap:6px;flex-wrap:wrap}
+  header h1{font-size:16px}
+  header .sp{display:none}
+  header #btnMidi{margin-left:auto}
+  header #status{order:5;width:100%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  header button{padding:6px 10px}
+  .hl{display:none}
+  #scorebar{gap:4px;flex-wrap:nowrap;overflow-x:auto;padding-bottom:2px}.stat{flex:none;min-width:54px;padding:4px 6px}.stat b{font-size:15px}
+  .card{padding:10px}
+  #panels{padding-bottom:12px}
+  dialog{width:calc(100% - 12px);padding:12px}
   #stageRow{flex-direction:column}
   #fing{width:auto;display:grid;grid-template-columns:130px 1fr;gap:4px 10px;text-align:left;align-items:center}
   #fing .fl{grid-column:2}
   #saxsvg{grid-row:1/5;grid-column:1;width:120px}
   #gameWrap,#notationWrap{height:280px}
+}
+@media (orientation:landscape) and (max-height:520px){
+  header{padding:4px 10px}header h1{font-size:15px}
+  #scorebar{margin:2px 0 6px}.stat{min-width:46px;padding:2px 6px}.stat b{font-size:14px}
+  #gameWrap,#notationWrap{height:calc(100dvh - 172px);min-height:190px}
+  #fing{width:150px;padding:6px}#fingName{font-size:20px}#saxsvg{width:96px}
+  #dock{position:static}
 }
 </style>
 </head>
@@ -122,10 +163,10 @@ dialog kbd{background:var(--bg2);border:1px solid var(--line);border-radius:5px;
   <h1>🎷 Sax Tutor</h1>
   <div id="status">MIDI: not connected · Mic: off</div>
   <div class="sp"></div>
-  <button id="btnMidi">🎹 Connect MIDI</button>
-  <button id="btnMic">🎤 Mic</button>
-  <button id="btnProg">📈 Progress</button>
-  <button id="btnHelp">❓ Help</button>
+  <button id="btnMidi">🎹 <span class="hl">Connect </span>MIDI</button>
+  <button id="btnMic" aria-label="Microphone">🎤<span class="hl"> Mic</span></button>
+  <button id="btnProg" aria-label="Progress">📈<span class="hl"> Progress</span></button>
+  <button id="btnHelp" aria-label="Help">❓<span class="hl"> Help</span></button>
 </header>
 
 <div id="app">
@@ -162,19 +203,21 @@ dialog kbd{background:var(--bg2);border:1px solid var(--line);border-radius:5px;
     </aside>
   </div>
 
+  <div id="dock">
   <div id="stepRow" class="row" style="margin:6px 0 0">
-    <button id="btnPrev">◀ Prev note</button><button id="btnNext">Next note ▶</button>
-    <label><input type="checkbox" id="stepAdv"> Advance when I play it</label>
+    <button id="btnPrev" aria-label="Previous note">◀ Prev</button><button id="btnNext" aria-label="Next note">Next ▶</button>
+    <label><input type="checkbox" id="stepAdv"> Auto-advance</label>
     <span class="small mut">Step through one note at a time (← → keys)</span>
   </div>
   <div id="transport">
     <button id="btnStart" class="primary">▶ Start</button>
-    <button id="btnPause">⏸ Pause</button>
-    <button id="btnStop">⏹ Stop</button>
+    <button id="btnPause" aria-label="Pause">⏸<span class="hl"> Pause</span></button>
+    <button id="btnStop" aria-label="Stop">⏹<span class="hl"> Stop</span></button>
     <div class="grow">
-      <div class="small mut">Speed <b id="speedVal">100%</b> · <b id="bpmVal">100</b> BPM</div>
+      <div class="small mut" style="white-space:nowrap">Speed <b id="speedVal">100%</b> · <b id="bpmVal">100</b> BPM</div>
       <input type="range" id="speed" min="25" max="150" step="5" value="100">
     </div>
+  </div>
   </div>
 
   <div id="panels">
@@ -673,13 +716,13 @@ function schedReset(){
 function startPlay(){
   ensureAudio();if(T.playing)return;
   if(!T.resumable){T.pos=loopStart()-S.countIn*bb;resetPass();}
-  T.playing=true;T.resumable=true;T.last=performance.now();T.waiting=false;schedReset();syncTransport();
+  T.playing=true;T.resumable=true;T.last=performance.now();T.waiting=false;schedReset();syncTransport();wake();
 }
-function pausePlay(){if(T.playing){T.playing=false;syncTransport();}}
+function pausePlay(){if(T.playing){T.playing=false;syncTransport();unwake();}}
 function stopPlay(){
   if(T.playing||T.resumable)finishPass(true);
   T.playing=false;T.resumable=false;T.waiting=false;T.pos=loopStart();
-  if(notes.length)resetPass();syncTransport();
+  if(notes.length)resetPass();syncTransport();unwake();
 }
 let stepLock=0;
 function stepNote(dir){
@@ -1085,7 +1128,7 @@ function drawGame(){
   // overlays
   c.textAlign='center';c.textBaseline='middle';
   if(T.playing&&T.pos<ls-1e-6){c.fillStyle='rgba(255,255,255,.9)';c.font='bold 64px system-ui';c.fillText(String(Math.ceil(ls-T.pos-1e-9)),W/2,H/2);}
-  else if(!T.playing){c.fillStyle='rgba(255,255,255,.75)';c.font='bold 18px system-ui';c.fillText(T.resumable?'Paused — press Start':'Press Start (Space) — play the notes as they reach the line',W/2+hitX/3,H-18);}
+  else if(!T.playing){c.fillStyle='rgba(255,255,255,.75)';c.font='bold 16px system-ui';c.fillText(W<520?(T.resumable?'Paused':'Press Start'):(T.resumable?'Paused — press Start':'Press Start (Space) — play the notes as they reach the line'),W/2+hitX/3,H-18);}
   else if(T.waiting){c.fillStyle='rgba(255,179,71,.95)';c.font='bold 16px system-ui';c.fillText('Waiting for you…',W/2+hitX/3,H-18);}
   c.textAlign='left';
 }
@@ -1122,7 +1165,8 @@ function drawFingers(){
   const hitX=Math.min(170,Math.max(100,W*.2)),ppb=(W-hitX-16)/6.5,xOf=u=>hitX+(u-T.pos)*ppb;
   const g=9,sy0=44,stepY=s=>sy0+4*g-(s-30)*(g/2),letterY=sy0+4*g+36,laneTop=letterY+16;
   const lanes0=getLanes();let gp=0;lanes0.forEach((L,i)=>{if(i&&L.grp!==lanes0[i-1].grp)gp++;});
-  const baseH=window.innerWidth<=760?280:330,wantH=Math.round(Math.min(600,Math.max(baseH,laneTop+(lanes0.length+gp*.55)*20+10)));
+  if(!wrap.style.height)wrap._baseH=wrap.clientHeight;
+  const baseH=wrap._baseH||330,wantH=Math.round(Math.min(600,Math.max(baseH,laneTop+(lanes0.length+gp*.55)*20+10)));
   const curH=wrap.style.height?parseInt(wrap.style.height):baseH;
   if(wantH!==curH){wrap.style.height=wantH===baseH?'':wantH+'px';return;}
   const ls=loopStart(),le=loopEnd(),ci=currentIdx();
@@ -1209,7 +1253,7 @@ function drawFingers(){
   c.textAlign='center';c.textBaseline='middle';
   if(S.instr==='concert'){c.fillStyle='rgba(255,255,255,.7)';c.font='bold 15px system-ui';c.fillText('Choose your horn under “Horn & key” to see fingerings',W/2+hitX/3,laneTop+60);}
   if(T.playing&&T.pos<ls-1e-6){c.fillStyle='rgba(255,255,255,.9)';c.font='bold 60px system-ui';c.fillText(String(Math.ceil(ls-T.pos-1e-9)),W/2+hitX/3,laneTop+70);}
-  else if(!T.playing){const msg=T.resumable?'Paused — Start to continue, or step with ◀ ▶':'Press Start (Space) or step through with ◀ ▶';
+  else if(!T.playing){const msg=W<520?(T.resumable?'Paused':'Press Start or step ◀ ▶'):(T.resumable?'Paused — Start to continue, or step with ◀ ▶':'Press Start (Space) or step through with ◀ ▶');
     c.font='bold 14px system-ui';const tw=c.measureText(msg).width+24,px=W/2+hitX/3;
     c.fillStyle='rgba(13,15,20,.88)';rr(c,px-tw/2,H-28,tw,24,12);c.fill();c.fillStyle='rgba(255,255,255,.85)';c.fillText(msg,px,H-15.5);}
   else if(T.waiting){c.fillStyle='rgba(255,179,71,.95)';c.font='bold 15px system-ui';c.fillText('Waiting for you…',W/2+hitX/3,H-12);}
@@ -1888,6 +1932,31 @@ bind('#chartSave',()=>{
     toast(txt?'Chords saved':'Chords cleared');
   }catch(e){$('#chartErr').textContent=e.message;}
 },'click');
+
+/* ---------- phone & tablet helpers ---------- */
+let wl=null;
+async function wake(){try{if('wakeLock' in navigator&&!wl){wl=await navigator.wakeLock.request('screen');wl.addEventListener('release',()=>{wl=null;});}}catch(e){wl=null;}}
+function unwake(){try{if(wl){wl.release();wl=null;}}catch(e){wl=null;}}
+document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'&&T.playing)wake();});
+const mqNarrow=window.matchMedia('(max-width:760px)');
+function applyNarrow(){document.body.classList.toggle('narrow',mqNarrow.matches);}
+(function initCards(){
+  const cards=$$('#panels .card');
+  const def=['Backing track','Input & timing'];
+  if(!Array.isArray(S.collapsed))S.collapsed=def;
+  cards.forEach(c=>{
+    const h=c.querySelector('h3'),name=h.textContent.trim();
+    c.classList.toggle('collapsed',S.collapsed.includes(name));
+    h.addEventListener('click',()=>{
+      if(!document.body.classList.contains('narrow'))return;
+      c.classList.toggle('collapsed');
+      S.collapsed=cards.filter(x=>x.classList.contains('collapsed')).map(x=>x.querySelector('h3').textContent.trim());saveS();
+    });
+  });
+  applyNarrow();
+  if(window.ResizeObserver){new ResizeObserver(()=>{document.documentElement.style.setProperty('--dockH',$('#dock').offsetHeight+'px');}).observe($('#dock'));}
+  (mqNarrow.addEventListener?mqNarrow.addEventListener('change',applyNarrow):mqNarrow.addListener(applyNarrow));
+})();
 
 /* ---------- main loop ---------- */
 function frame(){

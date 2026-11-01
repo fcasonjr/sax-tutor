@@ -75,6 +75,13 @@ A length carries over to following notes until you change it. Use `|` as an opti
 
 Timing is snapped to a sixteenth or triplet-eighth grid so the notation stays readable.
 
+## Phones and tablets
+
+- **Android (Chrome):** MIDI works over USB-OTG or Bluetooth MIDI, the same as on a computer.
+- **iPhone and iPad:** Safari and Chrome on iOS don't support Web MIDI. A browser app that adds it (for example MidiWeb) lets a MIDI controller connect, so open the app's address inside that browser. The microphone mode also works in any iOS browser.
+- On narrow screens the controls collapse into tappable cards, and Start/Pause/Stop, speed and note stepping stay pinned at the bottom. The screen is kept awake while you play where the browser allows it.
+- Home-screen "web app" mode on iOS uses Safari's engine and has no MIDI, so use a browser tab instead.
+
 ## Keyboard shortcuts
 
 | Key | Action |
