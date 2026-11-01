@@ -72,6 +72,42 @@ dialog kbd{background:var(--bg2);border:1px solid var(--line);border-radius:5px;
 .nh.hollow .head{fill:var(--bg2)}
 .nh .st{stroke:currentColor;stroke-width:1.4;fill:none}
 .nh text{fill:currentColor}
+#dlgProg{max-width:780px;max-height:92vh;overflow:auto}
+#dlgProg h3{margin:16px 0 6px;font-size:13px;color:var(--mut);text-transform:uppercase;letter-spacing:.08em;font-weight:600}
+.ptabs{display:flex;gap:6px;margin:6px 0 4px}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(112px,1fr));gap:8px;margin:8px 0}
+.kpi{background:var(--bg2);border:1px solid var(--line);border-radius:10px;padding:8px 10px}
+.kpi b{display:block;font-size:20px;line-height:1.15;color:var(--txt)}
+.kpi span{font-size:11px;color:var(--mut)}
+.suggest{background:var(--bg2);border:1px solid var(--line);border-left:3px solid #3987e5;border-radius:10px;padding:10px 12px;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.suggest .t{flex:1;min-width:200px}
+.meter{height:10px;background:#2c2c2a;border-radius:6px;overflow:hidden;margin:6px 0 2px}
+.meter>i{display:block;height:100%;background:#3987e5;border-radius:6px 0 0 6px}
+.lrow{display:flex;align-items:center;gap:8px;margin:5px 0;font-size:13px}
+.lrow .lb{width:118px;flex:none;color:var(--mut)}
+.lrow .tr{flex:1;position:relative;height:16px}
+.lrow .bar{position:absolute;left:0;top:1px;height:14px;background:#3987e5;border-radius:0 4px 4px 0}
+.lrow .t90{position:absolute;top:-2px;bottom:-2px;width:1px;background:#898781}
+.lrow .val{width:96px;flex:none;color:var(--txt);font-variant-numeric:tabular-nums}
+.lrow .val.ok{color:#0ca30c}
+.cells{display:grid;grid-template-columns:repeat(auto-fill,minmax(28px,1fr));gap:2px}
+.cell{aspect-ratio:1;min-height:26px;border:1px solid transparent;border-radius:4px;padding:0;font-size:10px;line-height:1;background:#2c2c2a;color:#898781;cursor:pointer}
+.cell:hover,.cell:focus-visible{outline:2px solid var(--txt);outline-offset:0}
+.cell.b0{background:#2c2c2a;color:#c3c2b7}
+.cell.b1{background:#1c5cab;color:#fff}.cell.b2{background:#3987e5;color:#fff}.cell.b3{background:#6da7ec;color:#0b0b0b}.cell.b4{background:#b7d3f6;color:#0b0b0b}
+.cell.nd{background:transparent;border-color:#383835;color:#898781}
+.cell.sel{outline:2px solid #ffb347}
+.legend{display:flex;gap:12px;flex-wrap:wrap;font-size:12px;color:var(--mut);margin-top:6px;align-items:center}
+.legend i{display:inline-block;width:12px;height:12px;border-radius:3px;vertical-align:-2px;margin-right:4px}
+#tip{position:fixed;z-index:80;pointer-events:none;background:#242a3a;border:1px solid var(--line);border-radius:8px;padding:6px 9px;font-size:12px;display:none;max-width:240px}
+#tip b{display:block;font-size:14px;color:var(--txt)}
+#tip span{color:var(--mut)}
+#dlgProg table{width:100%;border-collapse:collapse;font-size:12px}
+#dlgProg th,#dlgProg td{padding:4px 6px;border-bottom:1px solid var(--line);text-align:right;font-variant-numeric:tabular-nums}
+#dlgProg th:first-child,#dlgProg td:first-child{text-align:left}
+#dlgProg th{color:var(--mut);font-weight:600}
+#dlgProg details{margin-top:10px}
+#dlgProg summary{cursor:pointer;color:var(--mut);font-size:13px}
 @media (max-width:760px){
   #stageRow{flex-direction:column}
   #fing{width:auto;display:grid;grid-template-columns:130px 1fr;gap:4px 10px;text-align:left;align-items:center}
@@ -88,6 +124,7 @@ dialog kbd{background:var(--bg2);border:1px solid var(--line);border-radius:5px;
   <div class="sp"></div>
   <button id="btnMidi">🎹 Connect MIDI</button>
   <button id="btnMic">🎤 Mic</button>
+  <button id="btnProg">📈 Progress</button>
   <button id="btnHelp">❓ Help</button>
 </header>
 
@@ -151,6 +188,7 @@ dialog kbd{background:var(--bg2);border:1px solid var(--line);border-radius:5px;
       <div class="row small mut" id="songInfo"></div>
       <div class="row"><span class="lab">Progress</span>
         <span class="small" id="prog">–</span></div>
+      <div class="row"><button id="btnProg2">📈 Open progress details</button></div>
     </div>
 
     <div class="card">
@@ -241,6 +279,13 @@ dialog kbd{background:var(--bg2);border:1px solid var(--line);border-radius:5px;
     <button id="addCancel">Cancel</button>
     <button id="addOk" class="primary">Add &amp; practice</button>
   </div>
+</dialog>
+
+<dialog id="dlgProg">
+  <div class="row" style="justify-content:space-between;margin:0;flex-wrap:nowrap"><h2 id="progTitle" style="margin:0;font-size:15px;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">Progress</h2><button id="progClose" style="flex:none">✕</button></div>
+  <div class="ptabs"><button data-ptab="this" class="on">This lick</button><button data-ptab="all">All licks</button></div>
+  <div id="progBody"></div>
+  <div id="tip"></div>
 </dialog>
 
 <dialog id="dlgChords">
@@ -616,7 +661,7 @@ const T={playing:false,resumable:false,pos:0,last:0,waiting:false,nextClick:0,ne
 const P={perfect:0,good:0,ok:0,miss:0,wrong:0,extra:0,combo:0,sumDt:0,nDt:0};
 let bestCombo=0;
 function resetPass(){
-  notes.forEach(n=>{n.st=0;n.gr='';n.dt=0;});
+  notes.forEach(n=>{n.st=0;n.gr='';n.dt=0;n.wr=0;});
   Object.assign(P,{perfect:0,good:0,ok:0,miss:0,wrong:0,extra:0,combo:0,sumDt:0,nDt:0});
   refreshNotationMarks();updateStats();
 }
@@ -654,6 +699,7 @@ function tick(){
     const dt=(now-T.last)/1000;
     if(!T.waiting)T.pos+=dt*bpmEff()/60;
     T.last=now;
+    if(!T.waiting&&T.pos>=loopStart()-1e-6)creditTime(Math.min(dt,.25));
     const ls=loopStart(),le=loopEnd();
     if(S.wait&&T.pos>=0){
       const n=firstPending();
@@ -694,7 +740,6 @@ function tick(){
 function posAt(perfT){return T.playing&&!T.waiting?T.pos+(perfT-T.last)/1000*bpmEff()/60:T.pos;}
 
 /* ---------- judging ---------- */
-let runs=[];try{runs=JSON.parse(localStorage.getItem('saxtutor.runs')||'[]')}catch(e){}
 const pops=[];
 function addPop(n,txt,col){pops.push({t:performance.now(),n,txt,col});}
 function mark(n,st,gr){
@@ -705,12 +750,6 @@ function mark(n,st,gr){
   markNotation(n.i);updateStats();
 }
 function accuracy(){const j=P.perfect+P.good+P.ok+P.miss+P.wrong;return j?(P.perfect*100+P.good*85+P.ok*60)/j:null;}
-function finishPass(stopping){
-  const j=P.perfect+P.good+P.ok+P.miss;if(j<Math.max(2,Math.floor(notes.filter(inLoop).length/2)))return;
-  const acc=accuracy();runs.push({id:song.id,acc,bpm:bpmEff(),d:Date.now()});if(runs.length>300)runs=runs.slice(-300);
-  try{localStorage.setItem('saxtutor.runs',JSON.stringify(runs))}catch(e){}
-  toast(`Pass: ${Math.round(acc)}% accuracy`+(P.combo?` · combo ${bestCombo}`:''));showProgress();
-}
 function matches(inSnd,n){const t=n.m+shift();return S.ignoreOct?(((inSnd-t)%12)+12)%12===0:inSnd===t;}
 const live={m:null,since:0};
 function noteOn(snd,perfT,src){
@@ -726,7 +765,7 @@ function noteOn(snd,perfT,src){
   if(S.wait&&T.waiting){
     const n=firstPending();
     if(n&&matches(snd,n)){mark(n,1,'perfect');addPop(n,'Perfect','#7dd3fc');T.waiting=false;}
-    else if(n){P.wrong++;P.combo=0;addPop(n,'Wrong','#fb923c');updateStats();}
+    else if(n){P.wrong++;n.wr=(n.wr||0)+1;P.combo=0;addPop(n,'Wrong','#fb923c');updateStats();}
     return;
   }
   let best=null,anyNear=null;
@@ -742,7 +781,7 @@ function noteOn(snd,perfT,src){
     const gr=a<=PERF?'perfect':a<=GOOD?'good':'ok';
     best.dt=dms;P.sumDt+=dms;P.nDt++;
     mark(best,1,gr);addPop(best,gr==='perfect'?'Perfect':gr==='good'?'Good':'OK',gr==='perfect'?'#7dd3fc':gr==='good'?'#4ade80':'#facc15');
-  }else if(anyNear){P.wrong++;P.combo=0;addPop(anyNear,'Wrong','#fb923c');updateStats();}
+  }else if(anyNear){P.wrong++;anyNear.wr=(anyNear.wr||0)+1;P.combo=0;addPop(anyNear,'Wrong','#fb923c');updateStats();}
   else{P.extra++;updateStats();}
 }
 function noteOff(snd){if(live.m===snd)live.m=null;}
@@ -778,13 +817,6 @@ function updateStats(){
   $('#sCombo').textContent=P.combo;$('#sBest').textContent=bestCombo;
   $('#sAvg').textContent=P.nDt?(P.sumDt/P.nDt>=0?'+':'')+Math.round(P.sumDt/P.nDt)+'ms':'–';
   $('#sPerfect').textContent=P.perfect;$('#sGood').textContent=P.good;$('#sOk').textContent=P.ok;$('#sMiss').textContent=P.miss;$('#sWrong').textContent=P.wrong;
-}
-function showProgress(){
-  const r=runs.filter(x=>x.id===song.id);
-  if(!r.length){$('#prog').textContent='No runs yet';return;}
-  const best=Math.max(...r.map(x=>x.acc)),last=r[r.length-1].acc;
-  const fast=r.filter(x=>x.acc>=90).reduce((m,x)=>Math.max(m,x.bpm),0);
-  $('#prog').innerHTML=`Best ${Math.round(best)}% · Last ${Math.round(last)}% · ${fast?'Fastest ≥90%: '+Math.round(fast)+' BPM':'Fastest ≥90%: –'} · ${r.length} runs`;
 }
 let toastT=0;
 function toast(t){const e=$('#toast');e.textContent=t;e.classList.add('show');clearTimeout(toastT);toastT=setTimeout(()=>e.classList.remove('show'),2200);}
@@ -1567,6 +1599,241 @@ bind('#btnOctUp',()=>{S.midiOffset+=12;saveS();setStatus();},'click');
 $$('#viewbar [data-view]').forEach(b=>b.addEventListener('click',()=>setView(b.dataset.view)));
 window.addEventListener('resize',()=>{if(S.view==='notation')buildNotation();});
 
+
+/* ---------- progress tracking ---------- */
+let prog={v:2,runs:[],bars:{},days:{},secs:{},goals:{}};
+try{
+  const rawp=localStorage.getItem('saxtutor.prog');
+  if(rawp)Object.assign(prog,JSON.parse(rawp));
+  else{const old=JSON.parse(localStorage.getItem('saxtutor.runs')||'[]');prog.runs=old.map(r=>({id:r.id,acc:r.acc,bpm:r.bpm,sp:null,t:r.d||0,wait:false}));}
+}catch(e){}
+let runs=prog.runs,progDirty=false;
+const saveProg=()=>{try{localStorage.setItem('saxtutor.prog',JSON.stringify(prog));progDirty=false;}catch(e){}};
+setInterval(()=>{if(progDirty)saveProg();},8000);
+window.addEventListener('pagehide',()=>{if(progDirty)saveProg();});
+const dayKey=t=>new Date(t).toLocaleDateString('en-CA');
+function creditTime(dt){const k=dayKey(Date.now());prog.days[k]=(prog.days[k]||0)+dt;prog.secs[song.id]=(prog.secs[song.id]||0)+dt;progDirty=true;}
+function recordBars(){
+  const st=prog.bars[song.id]=prog.bars[song.id]||{};
+  for(const n of notes){
+    if(!inLoop(n)||n.st===0)continue;
+    const bi=Math.floor(n.s/bu),b=st[bi]=st[bi]||{a:0,p:0,g:0,o:0,m:0,w:0,dt:0,nd:0};
+    b.a++;
+    if(n.st===1){if(n.gr==='perfect')b.p++;else if(n.gr==='good')b.g++;else b.o++;if(!S.wait){b.dt+=n.dt||0;b.nd++;}}else b.m++;
+    b.w+=n.wr||0;
+  }
+  progDirty=true;
+}
+const goalBpm=(id)=>{const g=prog.goals[id||song.id];const sg=allSongs().find(x=>x.id===(id||song.id));return(g&&g.bpm)||(sg?sg.bpm:100);};
+const songRuns=id=>runs.filter(x=>x.id===id&&!x.wait);
+const fastest90=id=>songRuns(id).filter(x=>x.acc>=90).reduce((m,x)=>Math.max(m,x.bpm),0);
+function isMastered(id){const g=goalBpm(id);return songRuns(id).filter(x=>x.acc>=90&&x.bpm>=g*.97).length>=2;}
+function finishPass(stopping){
+  const j=P.perfect+P.good+P.ok+P.miss;if(j<2)return;
+  recordBars();
+  const loopNotes=notes.filter(inLoop).length;
+  if(j<Math.max(2,Math.floor(loopNotes/2))){saveProg();return;}
+  const acc=accuracy(),before=fastest90(song.id);
+  runs.push({id:song.id,acc,bpm:bpmEff(),sp:S.speed,a:loopA,b:loopB,nb:loopB-loopA+1,key:S.key,t:Date.now(),n:j,p:P.perfect,g:P.good,o:P.ok,m:P.miss,w:P.wrong,wait:S.wait});
+  if(runs.length>600)runs.splice(0,runs.length-600);
+  saveProg();
+  let msg='Pass: '+Math.round(acc)+'%';
+  if(!S.wait&&acc>=90&&bpmEff()>before+.5)msg+=' · new fastest at 90%+: '+Math.round(bpmEff())+' BPM!';
+  else if(P.combo>=8)msg+=' · combo '+bestCombo;
+  toast(msg);showProgress();if($('#dlgProg').open)renderProg();
+}
+function showProgress(){
+  const r=songRuns(song.id);
+  if(!r.length){$('#prog').textContent='No runs yet';return;}
+  const best=Math.max(...r.map(x=>x.acc)),last=r[r.length-1].acc,f=fastest90(song.id);
+  $('#prog').textContent=`Best ${Math.round(best)}% · Last ${Math.round(last)}% · 90%+ up to ${f?Math.round(f)+' BPM':'–'} (goal ${Math.round(goalBpm())}) · ${r.length} runs${isMastered(song.id)?' · ✓ mastered':''}`;
+}
+const esc=x=>String(x).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const fmtTime=sec=>{sec=Math.round(sec);const h=Math.floor(sec/3600),m=Math.floor(sec%3600/60);return h?h+'h '+m+'m':m?m+'m':sec+'s';};
+const fmtDate=t=>t?new Date(t).toLocaleDateString(undefined,{month:'short',day:'numeric'}):'–';
+function streakDays(){
+  let n=0;const d=new Date();
+  if((prog.days[dayKey(d)]||0)<120)d.setDate(d.getDate()-1);
+  while((prog.days[dayKey(d)]||0)>=120){n++;d.setDate(d.getDate()-1);}
+  return n;
+}
+function barStats(id){
+  const st=prog.bars[id]||{},out=[];
+  for(let i=0;i<nBars;i++){const b=st[i];out.push(b&&b.a>=2?{...b,err:Math.min(1,(b.m+b.w)/b.a)}:null);}
+  return out;
+}
+function weakWindow(){
+  const bs=barStats(song.id),W=Math.min(4,nBars);let best=null,bv=0;
+  for(let i=0;i+W<=nBars;i++){let v=0,known=0;for(let k=0;k<W;k++){const b=bs[i+k];if(b){v+=b.err;known++;}}if(known&&v>bv){bv=v;best=i;}}
+  return bv>0.25&&best!==null?{a:best+1,b:best+W}:null;
+}
+function suggestion(){
+  const r=songRuns(song.id),g=goalBpm(),goalSp=Math.max(25,Math.min(150,Math.round(g/song.bpm*100)));
+  if(!r.length)return{text:'Play it through once at about 60% speed to set a baseline.',act:{speed:60},label:'Set speed to 60%'};
+  const last=r[r.length-1],prev=r[r.length-2];
+  if(isMastered(song.id))return{text:'Mastered at your goal tempo. Try “Practice all keys”, or raise the goal tempo.',act:{cycle:'5'},label:'Turn on all-keys practice'};
+  const ww=weakWindow();
+  if(last.acc<70){const sp=Math.max(25,Math.round(((last.sp||S.speed)-20)/5)*5);return{text:'That pass was rough. Slow down to '+sp+'%'+(ww?' and loop bars '+ww.a+'–'+ww.b+', your weakest spot':'')+'.',act:{speed:sp,loop:ww},label:'Apply'};}
+  if(last.acc>=90&&prev&&prev.acc>=90&&Math.abs((prev.sp||0)-(last.sp||0))<=5){const sp=Math.min(goalSp,Math.min(150,(last.sp||S.speed)+10));
+    if(sp>(last.sp||0))return{text:'Two clean passes in a row at '+(last.sp||S.speed)+'%. Try '+sp+'%.',act:{speed:sp},label:'Go to '+sp+'%'};}
+  if(last.acc>=90)return{text:'Nice pass. Repeat it once more at this speed to lock it in, then speed up.',act:null};
+  return{text:'Keep going at '+(last.sp||S.speed)+'% until you reach 90%.'+(ww?' Your weakest bars are '+ww.a+'–'+ww.b+'.':''),act:ww?{loop:ww}:null,label:ww?'Loop bars '+ww.a+'–'+ww.b:''};
+}
+let progAct=null,progTab='this',confirmKey='';
+function bpmFmt(x){return Math.round(x);}
+function accLineChart(pts,Wd){
+  const Ht=180,L=34,R=34,T=26,B=26,iw=Wd-L-R,ih=Ht-T-B;
+  const xs=i=>pts.length===1?L+iw/2:L+iw*i/(pts.length-1),ys=v=>T+ih*(1-v/100);
+  let g='';
+  for(const v of[0,25,50,75,100])g+=`<line x1="${L}" x2="${Wd-R}" y1="${ys(v)}" y2="${ys(v)}" stroke="#2c2c2a" stroke-width="1"/><text x="${L-6}" y="${ys(v)+4}" text-anchor="end" font-size="11" fill="#898781">${v}</text>`;
+  g+=`<line x1="${L}" x2="${Wd-R}" y1="${ys(90)}" y2="${ys(90)}" stroke="#898781" stroke-width="1"/><text x="${Wd-R+4}" y="${ys(90)+4}" font-size="11" fill="#c3c2b7">90%</text>`;
+  const path=pts.map((p,i)=>(i?'L':'M')+xs(i).toFixed(1)+' '+ys(p.acc).toFixed(1)).join(' ');
+  g+=`<path d="${path}" fill="none" stroke="#3987e5" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>`;
+  pts.forEach((p,i)=>{g+=`<circle cx="${xs(i).toFixed(1)}" cy="${ys(p.acc).toFixed(1)}" r="4" fill="#3987e5" stroke="#1b1f2a" stroke-width="2"/>`;});
+  const lp=pts[pts.length-1];
+  g+=`<text x="${xs(pts.length-1)}" y="${ys(lp.acc)-10}" text-anchor="${pts.length>1?'end':'middle'}" font-size="12" font-weight="700" fill="#e9ecf4">${Math.round(lp.acc)}%</text>`;
+  g+=`<text x="${L}" y="${Ht-6}" font-size="11" fill="#898781">${esc(fmtDate(pts[0].t))}</text><text x="${Wd-R}" y="${Ht-6}" text-anchor="end" font-size="11" fill="#898781">${esc(fmtDate(lp.t))}</text>`;
+  g+=`<line id="xh" x1="0" x2="0" y1="${T}" y2="${T+ih}" stroke="#898781" stroke-width="1" visibility="hidden"/>`;
+  return `<svg id="accSvg" viewBox="0 0 ${Wd} ${Ht}" width="100%" role="img" aria-label="Accuracy by run, ${pts.length} runs, latest ${Math.round(lp.acc)} percent" style="touch-action:pan-y">${g}</svg>`;
+}
+function renderProg(){
+  const body=$('#progBody');$('#progTitle').textContent=progTab==='this'?'Progress · '+song.title:'Progress · all licks';
+  $$('#dlgProg [data-ptab]').forEach(b=>b.classList.toggle('on',b.dataset.ptab===progTab));
+  if(progTab==='all'){renderAll(body);return;}
+  const CW=Math.max(280,Math.min(700,window.innerWidth-24-34));
+  const r=songRuns(song.id),g=goalBpm(),f=fastest90(song.id),sec=prog.secs[song.id]||0;
+  const best=r.length?Math.max(...r.map(x=>x.acc)):null,today=prog.days[dayKey(Date.now())]||0;
+  let h=`<div class="kpis">
+    <div class="kpi"><b>${r.length}</b><span>Passes</span></div>
+    <div class="kpi"><b>${esc(fmtTime(sec))}</b><span>On this lick</span></div>
+    <div class="kpi"><b>${best===null?'–':Math.round(best)+'%'}</b><span>Best accuracy</span></div>
+    <div class="kpi"><b>${f?bpmFmt(f)+' BPM':'–'}</b><span>Fastest at 90%+</span></div>
+    <div class="kpi"><b>${streakDays()} day${streakDays()===1?'':'s'}</b><span>Streak (2+ min/day) · ${esc(fmtTime(today))} today</span></div></div>`;
+  const pct=Math.min(100,Math.round(f/g*100));
+  h+=`<div class="row" style="margin-top:6px"><span class="lab" style="width:auto">Goal tempo</span><input type="number" id="goalIn" min="30" max="400" value="${Math.round(g)}" style="width:76px"> BPM <span class="small mut">(original ${song.bpm})</span>
+    ${isMastered(song.id)?'<b style="color:#0ca30c">✓ Mastered</b>':''}</div>
+    <div class="meter" role="img" aria-label="${pct} percent of the way to your goal tempo"><i style="width:${pct}%"></i></div>
+    <div class="small mut">${f?`You’ve played this at 90%+ up to ${bpmFmt(f)} BPM — ${pct}% of your goal.`:'No pass at 90%+ yet.'}</div>`;
+  const sg=suggestion();progAct=sg.act;
+  h+=`<h3>Next step</h3><div class="suggest"><div class="t">${esc(sg.text)}</div>${sg.act&&sg.label?`<button id="progApply" class="primary">${esc(sg.label)}</button>`:''}</div>`;
+  if(r.length){
+    const pts=r.slice(-40);
+    h+=`<h3>Accuracy by pass</h3><div id="accWrap" style="position:relative">${accLineChart(pts,CW)}</div>`;
+    // ladder
+    const bk={};r.forEach(x=>{const k=Math.round((x.sp||100)/10)*10;(bk[k]=bk[k]||{n:0,best:0,bpm:0});bk[k].n++;if(x.acc>bk[k].best)bk[k].best=x.acc;bk[k].bpm=Math.max(bk[k].bpm,x.bpm);});
+    const ks=Object.keys(bk).map(Number),lo=Math.min(...ks),goalSp=Math.round(g/song.bpm*10)*10,hi=Math.max(...ks,goalSp);
+    h+=`<h3>Best accuracy by speed</h3><div>`;
+    for(let k=lo;k<=hi;k+=10){
+      const d=bk[k];
+      h+=`<div class="lrow"><span class="lb">${k}% · ${Math.round(song.bpm*k/100)} BPM${k===goalSp?' ★':''}</span><span class="tr" ${d?`tabindex="0" data-tip="${Math.round(d.best)}% best|${d.n} pass${d.n>1?'es':''} at ${k}% speed"`:''}>${d?`<span class="bar" style="width:${d.best}%"></span>`:''}<span class="t90" title="90%"></span></span><span class="val ${d&&d.best>=90?'ok':''}">${d?Math.round(d.best)+'%'+(d.best>=90?' ✓ 90%+':''):'<span class="mut">no passes</span>'}</span></div>`;
+    }
+    h+=`</div><div class="small mut">★ = your goal tempo · the vertical line marks 90%.</div>`;
+  }
+  // bars
+  const bs=barStats(song.id),any=bs.some(Boolean);
+  h+=`<h3>Trouble spots by bar</h3>`;
+  if(!any)h+=`<div class="small mut">Play a few passes and the bars you struggle with will show up here.</div>`;
+  else{
+    h+=`<div class="cells" id="cells">`;
+    bs.forEach((b,i)=>{
+      let cls='nd',tip=`Bar ${i+1}|Not enough data yet`;
+      if(b){const e=b.err;cls=e===0?'b0':e<=.15?'b1':e<=.35?'b2':e<=.6?'b3':'b4';tip=`Bar ${i+1}|${b.m} missed, ${b.w} wrong in ${b.a} tries`+(b.nd>=3?` · avg ${b.dt/b.nd>=0?'+':''}${Math.round(b.dt/b.nd)} ms`:'');}
+      h+=`<button class="cell ${cls}${i+1>=loopA&&i+1<=loopB&&!(loopA===1&&loopB===nBars)?' sel':''}" data-bar="${i+1}" data-tip="${esc(tip)}" aria-label="${esc(tip.replace('|',': '))}">${i+1}</button>`;
+    });
+    h+=`</div><div class="legend"><span><i style="background:#2c2c2a"></i>clean</span><span><i style="background:#1c5cab"></i>few errors</span><span><i style="background:#3987e5"></i>some</span><span><i style="background:#6da7ec"></i>many</span><span><i style="background:#b7d3f6"></i>most</span><span><i style="border:1px solid #383835"></i>no data</span></div>
+      <div class="small mut" style="margin-top:4px">Tap a bar to loop it; tap a later bar to extend the loop.</div>`;
+    const ww=weakWindow();
+    if(ww)h+=`<div class="row"><button id="weakBtn">🎯 Loop my weakest bars (${ww.a}–${ww.b})</button></div>`;
+    let sdt=0,nd=0;Object.values(prog.bars[song.id]||{}).forEach(b=>{sdt+=b.dt;nd+=b.nd;});
+    if(nd>=40){const av=sdt/nd;
+      h+=`<h3>Timing</h3><div class="small">On average you hit <b>${Math.abs(Math.round(av))} ms ${av>=0?'late':'early'}</b> (over ${nd} notes).${Math.abs(av)>=25?` <span class="mut">If it’s about the same on every lick, it’s probably system latency rather than your playing.</span> <button id="latBtn">Shift latency by ${Math.round(av)} ms</button>`:' That’s well within normal.'}</div>`;}
+  }
+  if(r.length){
+    h+=`<details><summary>Show passes as a table</summary><table><tr><th>Date</th><th>Speed</th><th>Bars</th><th>Accuracy</th><th>Perfect</th><th>Good</th><th>OK</th><th>Missed</th><th>Wrong</th></tr>`+
+      r.slice(-30).reverse().map(x=>`<tr><td>${esc(fmtDate(x.t))}</td><td>${x.sp?x.sp+'%':'–'}</td><td>${x.a?x.a+'–'+x.b:'–'}</td><td>${Math.round(x.acc)}%</td><td>${x.p??'–'}</td><td>${x.g??'–'}</td><td>${x.o??'–'}</td><td>${x.m??'–'}</td><td>${x.w??'–'}</td></tr>`).join('')+`</table></details>`;
+  }
+  h+=`<div class="row" style="margin-top:14px"><button id="pgExport">⬇ Export all progress</button><label class="mut small" style="cursor:pointer"><span class="btnlike" style="border:1px solid var(--line);border-radius:8px;padding:7px 12px;background:var(--panel2);color:var(--txt)">⬆ Import</span><input type="file" id="pgImport" accept=".json" style="display:none"></label>
+    <button id="pgReset">${confirmKey==='reset'?'Tap again to erase this lick’s progress':'Reset this lick'}</button></div><div id="pgMsg" class="small mut"></div>`;
+  body.innerHTML=h;bindProg();
+}
+function renderAll(body){
+  const rows=allSongs().map(sg=>{const r=songRuns(sg.id),b=r.length?Math.max(...r.map(x=>x.acc)):null,f=fastest90(sg.id),last=runs.filter(x=>x.id===sg.id).slice(-1)[0];
+    return{sg,n:r.length,b,f,last:last?last.t:0,m:isMastered(sg.id),sec:prog.secs[sg.id]||0,g:goalBpm(sg.id)};}).sort((a,b)=>b.last-a.last);
+  let h=`<div class="small mut" style="margin:6px 0">Practice streak: <b style="color:var(--txt)">${streakDays()} day${streakDays()===1?'':'s'}</b></div><table><tr><th>Lick</th><th>Passes</th><th>Best</th><th>90%+ up to</th><th>Time</th><th>Last</th><th></th></tr>`;
+  for(const x of rows)h+=`<tr><td>${esc(x.sg.title)}</td><td>${x.n}</td><td>${x.b===null?'–':Math.round(x.b)+'%'}</td><td>${x.f?Math.round(x.f)+' / '+Math.round(x.g):'– / '+Math.round(x.g)} BPM</td><td>${esc(fmtTime(x.sec))}</td><td>${esc(fmtDate(x.last))}</td><td>${x.m?'<span style="color:#0ca30c">✓ mastered</span>':''}</td></tr>`;
+  body.innerHTML=h+'</table>';
+}
+const tipEl=()=>$('#tip');
+function showTip(text,x,y){
+  const t=tipEl(),[v,sub]=text.split('|');t.replaceChildren();
+  const b=document.createElement('b');b.textContent=v;t.appendChild(b);
+  if(sub){const sp=document.createElement('span');sp.textContent=sub;t.appendChild(sp);}
+  t.style.display='block';const w=t.offsetWidth;
+  t.style.left=Math.min(window.innerWidth-w-8,Math.max(8,x+12))+'px';t.style.top=Math.max(8,y-t.offsetHeight-12)+'px';
+}
+const hideTip=()=>{tipEl().style.display='none';};
+function bindProg(){
+  const body=$('#progBody');
+  body.querySelectorAll('[data-tip]').forEach(el=>{
+    el.addEventListener('pointermove',e=>showTip(el.dataset.tip,e.clientX,e.clientY));
+    el.addEventListener('pointerleave',hideTip);
+    el.addEventListener('focus',()=>{const r=el.getBoundingClientRect();showTip(el.dataset.tip,r.left+r.width/2,r.top);});
+    el.addEventListener('blur',hideTip);
+  });
+  const svg=$('#accSvg');
+  if(svg){
+    const pts=songRuns(song.id).slice(-40),xh=$('#xh',svg),Wd=svg.viewBox.baseVal.width,L=34,R=34,iw=Wd-L-R;
+    const move=e=>{const rc=svg.getBoundingClientRect(),vx=(e.clientX-rc.left)*Wd/rc.width;
+      const i=pts.length===1?0:Math.max(0,Math.min(pts.length-1,Math.round((vx-L)/iw*(pts.length-1))));
+      const x=pts.length===1?L+iw/2:L+iw*i/(pts.length-1);xh.setAttribute('x1',x);xh.setAttribute('x2',x);xh.setAttribute('visibility','visible');
+      const p=pts[i];showTip(Math.round(p.acc)+'%|'+fmtDate(p.t)+' · '+(p.sp?p.sp+'% speed':'')+' · '+(p.a?'bars '+p.a+'–'+p.b:''),e.clientX,e.clientY);};
+    svg.addEventListener('pointermove',move);svg.addEventListener('pointerleave',()=>{xh.setAttribute('visibility','hidden');hideTip();});
+  }
+  const ap=$('#progApply');if(ap)ap.addEventListener('click',()=>{
+    const a=progAct;if(!a)return;
+    if(a.speed){S.speed=a.speed;}
+    if(a.loop){loopA=a.loop.a;loopB=a.loop.b;if(!T.playing)T.pos=loopStart();}
+    if(a.cycle){S.cycle=a.cycle;}
+    saveS();syncUI();updateLoopMarks();toast('Applied — press Start when you’re ready');renderProg();
+  });
+  const wb=$('#weakBtn');if(wb)wb.addEventListener('click',()=>{const w=weakWindow();if(!w)return;loopA=w.a;loopB=w.b;T.resumable=false;if(!T.playing)T.pos=loopStart();updateLoopMarks();toast('Looping bars '+w.a+'–'+w.b);renderProg();});
+  let tap=0;
+  body.querySelectorAll('.cell').forEach(c=>c.addEventListener('click',()=>{
+    const b=+c.dataset.bar;
+    if(tap===0||b<loopA){loopA=b;loopB=b;tap=1;}else{loopB=b;tap=0;}
+    T.resumable=false;if(!T.playing)T.pos=loopStart();updateLoopMarks();
+    body.querySelectorAll('.cell').forEach(x=>{const n=+x.dataset.bar;x.classList.toggle('sel',n>=loopA&&n<=loopB&&!(loopA===1&&loopB===nBars));});
+    toast('Loop: bars '+loopA+(loopB!==loopA?'–'+loopB:''));
+  }));
+  const lb=$('#latBtn');if(lb)lb.addEventListener('click',()=>{
+    let sdt=0,nd=0;Object.values(prog.bars[song.id]||{}).forEach(b=>{sdt+=b.dt;nd+=b.nd;});
+    S.latency=clamp(Math.round(S.latency+sdt/nd),-200,200);saveS();syncUI();toast('Latency set to '+S.latency+' ms');
+  });
+  const gi=$('#goalIn');if(gi)gi.addEventListener('change',()=>{prog.goals[song.id]={bpm:clamp(+gi.value||song.bpm,30,400)};saveProg();showProgress();renderProg();});
+  const ex=$('#pgExport');if(ex)ex.addEventListener('click',()=>{
+    try{const blob=new Blob([JSON.stringify({app:'sax-tutor',v:2,prog},null,1)],{type:'application/json'}),a=document.createElement('a');
+      a.href=URL.createObjectURL(blob);a.download='sax-tutor-progress.json';document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove();},500);}
+    catch(e){$('#pgMsg').textContent='Couldn’t start the download here.';}
+  });
+  const im=$('#pgImport');if(im)im.addEventListener('change',async()=>{
+    const f=im.files[0];if(!f)return;
+    try{const d=JSON.parse(await f.text()),p=d.prog||d;if(!p||!Array.isArray(p.runs))throw new Error('This doesn’t look like a Sax Tutor progress file.');
+      prog=Object.assign({v:2,runs:[],bars:{},days:{},secs:{},goals:{}},p);runs=prog.runs;saveProg();showProgress();renderProg();$('#pgMsg').textContent='Imported '+runs.length+' passes.';}
+    catch(e){$('#pgMsg').textContent=e.message;}
+  });
+  const rs=$('#pgReset');if(rs)rs.addEventListener('click',()=>{
+    if(confirmKey!=='reset'){confirmKey='reset';renderProg();return;}
+    confirmKey='';for(let i=runs.length-1;i>=0;i--)if(runs[i].id===song.id)runs.splice(i,1);
+    delete prog.bars[song.id];delete prog.secs[song.id];delete prog.goals[song.id];saveProg();showProgress();renderProg();toast('Progress for this lick erased');
+  });
+}
+function openProg(tab){progTab=tab||'this';confirmKey='';renderProg();$('#dlgProg').showModal();}
+bind('#btnProg',()=>openProg('this'),'click');
+bind('#btnProg2',()=>openProg('this'),'click');
+bind('#progClose',()=>{hideTip();$('#dlgProg').close();},'click');
+$('#dlgProg').addEventListener('close',hideTip);
+$$('#dlgProg [data-ptab]').forEach(b=>b.addEventListener('click',()=>{progTab=b.dataset.ptab;confirmKey='';renderProg();}));
+
 /* ---------- chord chart editor ---------- */
 function detectChart(band,tsBeats,nbars){
   const half=tsBeats>=4,per=half?2:1,seg=tsBeats/per,n=nbars*per;
@@ -1639,7 +1906,7 @@ setView(S.view);
 showProgress();
 requestAnimationFrame(frame);
 
-window.SaxTutor={S,T,P,get notes(){return notes},get song(){return song},noteOn,noteOff,startPlay,stopPlay,parseMidi,pickMelody,polyFrac,splitVoices,parseXML,parseChord,parseChart,detectChart,get plan(){return plan},get chordDisp(){return chordDisp},rebuildPlan,gmKind,parseDSL,normalize,loadSong,buildNotation,fingeringFor,detectPitch,setView,stepNote,get anchors(){return anchors}};
+window.SaxTutor={S,T,P,get notes(){return notes},get song(){return song},noteOn,noteOff,startPlay,stopPlay,parseMidi,pickMelody,get prog(){return prog},openProg,suggestion,weakWindow,streakDays,polyFrac,splitVoices,parseXML,parseChord,parseChart,detectChart,get plan(){return plan},get chordDisp(){return chordDisp},rebuildPlan,gmKind,parseDSL,normalize,loadSong,buildNotation,fingeringFor,detectPitch,setView,stepNote,get anchors(){return anchors}};
 })();
 </script>
 </body>

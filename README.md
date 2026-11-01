@@ -15,7 +15,8 @@ It's a single `index.html` file with no dependencies and no build step.
 - **Horn selection**: alto, tenor, soprano, baritone or concert pitch. Notation, note names and fingerings follow the horn you choose.
 - **Backing track**: chords appear above the notes in every view, transposed for your horn. The app plays a generated walking bass, piano comping and drums from the chord chart in Swing, Ballad or Bossa styles. For an imported MIDI file with other tracks, it can play the original band instead, and it detects a first-draft chord chart from the piano and bass. Edit chords any time with **✏ Chords…**.
 - **Import**: MIDI (`.mid`), MusicXML (`.xml`, `.musicxml`) and compressed MusicXML (`.mxl`), or type a lick directly.
-- **Progress**: best and last accuracy per lick, and the fastest tempo played at 90% or better. Imported licks and progress are saved in your browser.
+- **Progress tracking** (📈 Progress): per-lick history with an accuracy-by-pass chart, best accuracy at each speed, a goal tempo with a "mastered" mark (90%+ twice at your goal), practice time and streak. A **bar-by-bar trouble-spot map** shows where you miss or play wrong notes, and you can tap bars to loop them or use "Loop my weakest bars". The app suggests a next step (speed up, slow down, or focus on weak bars) and reports whether you tend to play early or late, with a one-tap latency adjustment. Export and import your progress as a file. Everything is saved in your browser.
+- **Imported licks** are saved in your browser too.
 
 ## Getting started
 
