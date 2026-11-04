@@ -70,10 +70,14 @@ A length carries over to following notes until you change it. Use `|` as an opti
 
 - **Fingerstyle / solo arrangements** (one track with melody, chords and bass together, like guitar tabs exported from Guitar Pro): the importer detects this, keeps the top notes as the melody, and plays the notes underneath as the backing band, with chords detected from them.
 - **MIDI**: if the file has several tracks, the app picks the most likely melody track (by name, single-note lines and range). You can change it in the track menu. Where notes overlap, the highest note is kept.
-- **MusicXML**: if the file contains a transposition (for example an alto sax part), it is applied automatically.
+- **MusicXML**: if the file contains a transposition (for example an alto sax part), it is applied automatically. Chord symbols (`<harmony>`) in the file are read into the chord chart, so they show above the notes and drive the backing band. They follow the same *Pitches are* setting as the notes. You can still change them with ✏ Chords….
 - Choose whether the file's pitches are **concert pitch** or **written for your horn**.
 
 Timing is snapped to a sixteenth or triplet-eighth grid so the notation stays readable.
+
+### Fixing mistakes (scanned music)
+
+Music that was converted from a PDF or photo by a scanning program (for example Audiveris, MuseScore or PlayScore) usually has a few wrong notes. Open the lick, switch to the notation view and press **✎ Edit notes**. Tap a note, compare it with your page, then change its pitch (♯/♭ or octave), make it shorter or longer, move it a sixteenth earlier or later, add a note after it, or delete it. **Undo** goes back one step, and edits are saved on your device. If you edit a built-in lick, the app edits a copy.
 
 ## Phones and tablets
 

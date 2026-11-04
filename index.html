@@ -71,6 +71,16 @@ dialog kbd{background:var(--bg2);border:1px solid var(--line);border-radius:5px;
 .nh .head{fill:currentColor;stroke:currentColor}
 .nh.hollow .head{fill:var(--bg2)}
 .nh .st{stroke:currentColor;stroke-width:1.4;fill:none}
+.nh .hitc{fill:transparent;stroke:none}
+body.editing .nh{cursor:pointer}
+.nh.sel .hitc{stroke:var(--acc);stroke-width:2;fill:rgba(255,179,71,.18)}
+#editBar{display:none;margin:6px 0 8px;padding:8px;background:var(--panel);border:1px solid var(--line);border-radius:10px;gap:6px;flex-wrap:wrap;align-items:center}
+body.editing #editBar{display:flex}
+#editBar button{padding:6px 10px;min-width:40px}
+#editBar .sep{width:1px;align-self:stretch;background:var(--line);margin:0 2px}
+@media(max-width:760px){#editBar .sep{display:none}}
+#editInfo{font-size:13px;color:var(--mut);flex:1 1 100%}
+#editInfo b{color:var(--txt)}
 .nh text{fill:currentColor}
 #dlgProg{max-width:780px;max-height:92vh;overflow:auto}
 #dlgProg h3{margin:16px 0 6px;font-size:13px;color:var(--mut);text-transform:uppercase;letter-spacing:.08em;font-weight:600}
@@ -188,7 +198,19 @@ body.narrow .card.collapsed>*:not(h3){display:none}
         <button data-view="game" class="on">🎮 Game view</button>
         <button data-view="fingers">🖐 Fingering view</button>
         <button data-view="notation">🎼 Notation view</button>
+        <button id="btnEdit" aria-label="Edit notes">✎ Edit notes</button>
         <span id="loopInfo" class="small mut"></span>
+      </div>
+      <div id="editBar">
+        <div id="editInfo">Tap a note to select it. Compare with your page and fix anything the scan got wrong.</div>
+        <button data-ed="up" aria-label="Pitch up a half step">♯ Up</button><button data-ed="down" aria-label="Pitch down a half step">♭ Down</button>
+        <button data-ed="octup" aria-label="Up an octave">8va ▲</button><button data-ed="octdn" aria-label="Down an octave">8va ▼</button>
+        <span class="sep"></span>
+        <button data-ed="shorter" aria-label="Shorter">Shorter</button><button data-ed="longer" aria-label="Longer">Longer</button>
+        <button data-ed="earlier" aria-label="Move earlier">◀ Move</button><button data-ed="later" aria-label="Move later">Move ▶</button>
+        <span class="sep"></span>
+        <button data-ed="add" aria-label="Add a note after">＋ Note</button><button data-ed="del" aria-label="Delete note">🗑 Delete</button>
+        <button data-ed="undo" aria-label="Undo">↶ Undo</button><button data-ed="done" class="primary">Done</button>
       </div>
       <div id="gameWrap"><canvas id="game"></canvas></div>
       <div id="notationWrap"><div id="notation"></div></div>
@@ -346,7 +368,8 @@ body.narrow .card.collapsed>*:not(h3){display:none}
   <p><b>Game view</b> scrolls colour-coded notes toward the hit line (like the drum tutor). <b>Fingering view</b> shows the staff on top and one lane per key below — blocks arrive at circles that light up when that key should be down. <b>Notation view</b> shows the staff; tap a bar to set the loop start, tap another to set the end.</p>
   <p><b>Playing:</b> connect your Aerophone with <i>Connect MIDI</i> (Chrome/Edge on desktop or Android), or use <i>Mic</i> with a real sax (headphones recommended). First time with MIDI, press <i>Calibrate MIDI</i> and play the first note — that fixes any octave/transposition difference.</p>
   <p><b>Practice tools:</b> slow it down, loop a few bars, <i>Wait for me</i>, swing, and <i>Practice all keys</i> to run a lick around the circle of 4ths.</p>
-  <p><b>Import:</b> MIDI or MusicXML transcriptions, or type a lick. Pick whether the file's pitches are concert or written for your horn.</p>
+  <p><b>Import:</b> MIDI or MusicXML transcriptions, or type a lick. Pick whether the file's pitches are concert or written for your horn. Chord symbols in a MusicXML file become the chord chart automatically.</p>
+  <p><b>Fixing an import:</b> press <i>✎ Edit notes</i> in the notation view, tap a note, and change its pitch, length or position, add a note after it, or delete it. <i>Undo</i> steps back. Built-in licks are copied first, so the original stays as it was.</p>
   <p><b>Backing track:</b> chords show above the notes (transposed for your horn). The app can play a generated bass, piano and drums from the chords (Swing, Ballad or Bossa). For an imported MIDI file with other tracks, it can play the original band instead. Use <i>✏ Chords…</i> to type or edit the chart.</p>
   <p><b>Step through:</b> use <i>Prev/Next note</i> (or <kbd>←</kbd> <kbd>→</kbd>) to move one note at a time and see the fingering. Tick <i>Advance when I play it</i> to move on whenever you play the shown note.</p>
   <p class="small mut">Shortcuts: <kbd>Space</kbd> start/pause · <kbd>Esc</kbd> stop · <kbd>V</kbd> switch view. Fingerings are standard (written B♭3–F♯6, including palm keys); altissimo above that isn’t charted.</p>
@@ -952,7 +975,7 @@ function buildNotation(){
         // heads
         grp.forEach(q=>{
           const cx=q.it.x,cy=q.y,els=[];
-          let h=`<g class="nh${q.hollow?' hollow':''}" data-i="${q.it.ni}">`;
+          let h=`<g class="nh${q.hollow?' hollow':''}" data-i="${q.it.ni}"><circle class="hitc" cx="${cx}" cy="${cy}" r="${g*1.35}"/>`;
           for(let l=28;l>=q.step-(q.step%2?0:0)&&q.step<=28;l-=2){if(l>=q.step)h+=`<line x1="${cx-rx-4}" x2="${cx+rx+4}" y1="${stepY(y0,l)}" y2="${stepY(y0,l)}" stroke="#7a86a8"/>`;}
           for(let l=40;q.step>=40&&l<=q.step;l+=2)h+=`<line x1="${cx-rx-4}" x2="${cx+rx+4}" y1="${stepY(y0,l)}" y2="${stepY(y0,l)}" stroke="#7a86a8"/>`;
           if(q.sp.acc!==0)h+=`<text x="${cx-rx-11}" y="${cy+4}" font-size="${g*1.7}" text-anchor="middle">${q.sp.acc>0?'♯':'♭'}</text>`;
@@ -1016,7 +1039,7 @@ function drawRest(it,y0,g){
   if(it.d===18||it.d===9||it.d===36)s+=`<circle cx="${x+9}" cy="${mid-2}" r="1.6" fill="#dfe3ee"/>`;
   return s;
 }
-function markNotation(i){const els=nhEls[i];if(!els)return;const n=notes[i];els.forEach(e=>{const h=e.classList.contains('hollow');e.setAttribute('class','nh'+(h?' hollow':'')+(n.st===1?' hit':n.st===2?' miss':(i===nextHL?' next':'')));});}
+function markNotation(i){const els=nhEls[i];if(!els)return;const n=notes[i];els.forEach(e=>{const h=e.classList.contains('hollow');e.setAttribute('class','nh'+(h?' hollow':'')+(n.st===1?' hit':n.st===2?' miss':(i===nextHL?' next':''))+(editMode&&i===selI?' sel':''));});}
 function refreshNotationMarks(){notes.forEach(n=>markNotation(n.i));}
 function setNextHL(i){if(i===nextHL)return;const old=nextHL;nextHL=i;if(old>=0)markNotation(old);if(i>=0)markNotation(i);}
 function oorCount(){if(S.instr==='concert'||!notes.length)return 0;let c=0;for(const n of notes){const w=wr(n);if(w<HORN_LO||w>HORN_HI)c++;}return c;}
@@ -1038,12 +1061,96 @@ function updatePlayhead(){
 }
 let tapState=0;
 $('#notation').addEventListener('click',e=>{
+  if(editMode){const nh=e.target.closest('.nh');if(nh){selectNote(+nh.dataset.i,true);return;}}
   const t=e.target.closest('[data-bar]');if(!t)return;const b=+t.dataset.bar;
   if(e.shiftKey&&b>=loopA){loopB=b;tapState=0;}
   else if(tapState===0||b<loopA){loopA=b;loopB=b;tapState=1;}
   else{loopB=b;tapState=0;}
   updateLoopMarks();if(!T.playing){T.pos=loopStart();T.resumable=false;}
 });
+
+
+/* ---------- note editor ---------- */
+let editMode=false,selI=-1,undoStack=[];
+const LEN_LADDER=[3,4,6,9,12,18,24,36,48];
+const lenName=d=>({3:'16th',4:'triplet 8th',6:'8th',9:'dotted 8th',12:'quarter',18:'dotted quarter',24:'half',36:'dotted half',48:'whole'}[d]||(d/12).toFixed(2)+' beats');
+function setEdit(on){
+  if(on===editMode)return;
+  if(on){
+    if(T.playing||T.resumable)stopPlay();
+    if(S.view!=='notation')setView('notation');
+    if(song.builtin){
+      const c={...song,id:'c'+Date.now().toString(36),title:song.title+' (my edit)',custom:true,units:song.units.map(u=>({...u}))};
+      delete c.builtin;delete c.chartBars;
+      if(charts[song.id])charts[c.id]={...charts[song.id]};
+      custom.push(c);saveCustom();fillSongSel();loadSong(c,true);toast('Editing a copy — the built-in lick stays as it was.');
+    }
+  }
+  editMode=on;document.body.classList.toggle('editing',on);
+  $('#btnEdit').classList.toggle('on',on);undoStack=[];selI=-1;
+  if(on)$('#editInfo').innerHTML='Tap a note to select it. Compare with your page and fix anything the scan got wrong.';
+  refreshNotationMarks();syncEditUI();
+}
+function syncEditUI(){
+  const has=editMode&&selI>=0&&notes[selI];
+  $$('#editBar [data-ed]').forEach(b=>{const k=b.dataset.ed;b.disabled=(k==='undo')?!undoStack.length:(k==='done'?false:!has&&k!=='add'||(k==='add'&&!has));});
+  if(has){
+    const n=notes[selI],w=n.m+shift()+TRANS[S.instr],sp=spell(w),u=song.units[selI];
+    $('#editInfo').innerHTML='Note '+(selI+1)+' of '+notes.length+' · <b>'+'CDEFGAB'[sp.letter]+(sp.acc>0?'♯':sp.acc<0?'♭':'')+(Math.floor(w/12)-1)+'</b> · '+lenName(u.e-u.s)+' · bar '+(Math.floor(u.s/bu)+1);
+  }
+}
+function selectNote(i,preview){
+  const old=selI;selI=i;if(old>=0)markNotation(old);markNotation(i);syncEditUI();
+  if(preview&&S.hear){ensureAudio();toneAt(actx.currentTime+.01,.5,notes[i].m+shift());}
+  const el=nhEls[i]&&nhEls[i][0];if(el&&S.view==='notation'){const w=$('#notationWrap'),r=el.getBoundingClientRect(),wr2=w.getBoundingClientRect();if(r.top<wr2.top||r.bottom>wr2.bottom)el.scrollIntoView({block:'center'});}
+}
+function afterEdit(keep){
+  let maxE=bu;for(const n of song.units)if(n.e>maxE)maxE=n.e;
+  nBars=Math.ceil(maxE/bu);
+  song.swingable=!song.units.some(n=>{const o=n.s%12;return o===4||o===8;});
+  const a=loopA,b=loopB,full=(a===1&&b===keep);
+  loopA=clamp(a,1,nBars);loopB=full?nBars:clamp(b,loopA,nBars);
+  refreshTiming();buildNotation();
+  if(selI>=notes.length)selI=notes.length-1;
+  refreshNotationMarks();syncUI();syncEditUI();
+  if(song.custom)saveCustom();
+}
+function doEdit(k){
+  if(k==='done'){setEdit(false);return;}
+  if(k==='undo'){
+    if(!undoStack.length)return;const u=undoStack.pop();const prevBars=nBars;song.units=u.units;selI=Math.min(u.sel,song.units.length-1);afterEdit(prevBars);return;
+  }
+  const us=song.units;
+  if(k==='add'&&selI<0)return;if(selI<0||!us[selI])return;
+  const n=us[selI],prev=us[selI-1],next=us[selI+1],snap0=JSON.stringify(us),prevBars=nBars;
+  let ok=true,msg='';
+  if(k==='up'||k==='down'||k==='octup'||k==='octdn'){
+    const d={up:1,down:-1,octup:12,octdn:-12}[k];n.m=clamp(n.m+d,0,127);
+  }else if(k==='shorter'||k==='longer'){
+    const len=n.e-n.s;let nl;
+    if(k==='shorter'){nl=[...LEN_LADDER].reverse().find(v=>v<len);if(!nl){ok=false;msg='Already the shortest';}}
+    else{nl=LEN_LADDER.find(v=>v>len);if(!nl){ok=false;msg='Already the longest';}else if(next&&n.s+nl>next.s){nl=next.s-n.s;if(nl<=len){ok=false;msg='No room — the next note is right after';}}}
+    if(ok)n.e=n.s+nl;
+  }else if(k==='earlier'||k==='later'){
+    const d=k==='earlier'?-3:3,len=n.e-n.s,ns=n.s+d;
+    if(ns<0||(prev&&ns<prev.e)||(next&&ns+len>next.s)){ok=false;msg='No room to move that way';}else{n.s=ns;n.e=ns+len;}
+  }else if(k==='add'){
+    const len=Math.min(n.e-n.s,12*Math.max(.25,1)),s0=n.e;let l=n.e-n.s;
+    if(next)l=Math.min(l,next.s-s0);
+    if(l<3){ok=false;msg='No room after this note — shorten it or the next one first';}
+    else{us.splice(selI+1,0,{s:s0,e:s0+l,m:n.m});selI++;}
+  }else if(k==='del'){
+    us.splice(selI,1);
+    if(!us.length){song.units=JSON.parse(snap0);toast('A lick needs at least one note.');return;}
+    selI=Math.min(selI,us.length-1);
+  }
+  if(!ok){if(msg)toast(msg);return;}
+  undoStack.push({units:JSON.parse(snap0),sel:selI-(k==='add'?1:0)});if(undoStack.length>60)undoStack.shift();
+  afterEdit(prevBars);
+  if(S.hear&&k!=='del'&&notes[selI]){ensureAudio();toneAt(actx.currentTime+.01,.45,notes[selI].m+shift());}
+}
+$('#btnEdit').addEventListener('click',()=>setEdit(!editMode));
+$('#editBar').addEventListener('click',e=>{const b=e.target.closest('[data-ed]');if(b&&!b.disabled)doEdit(b.dataset.ed);});
 
 /* ---------- game canvas ---------- */
 const cv=$('#game'),cx2=cv.getContext('2d');
@@ -1349,7 +1456,13 @@ window.addEventListener('keydown',e=>{
   const tg=e.target.tagName;if(['INPUT','SELECT','TEXTAREA'].includes(tg)&&!(e.target.type==='range'))return;if(tg==='TEXTAREA'||e.ctrlKey||e.metaKey||e.altKey)return;
   const k=e.key.toLowerCase();
   if(e.code==='Space'){e.preventDefault();T.playing?pausePlay():startPlay();return;}
-  if(e.key==='Escape'){stopPlay();return;}
+  if(editMode&&selI>=0){
+    if(e.key==='ArrowUp'){e.preventDefault();doEdit(e.shiftKey?'octup':'up');return;}
+    if(e.key==='ArrowDown'){e.preventDefault();doEdit(e.shiftKey?'octdn':'down');return;}
+    if(e.key==='Delete'||e.key==='Backspace'){e.preventDefault();doEdit('del');return;}
+    if(e.key==='ArrowRight'||e.key==='ArrowLeft'){e.preventDefault();selectNote(clamp(selI+(e.key==='ArrowRight'?1:-1),0,notes.length-1),true);return;}
+  }
+  if(e.key==='Escape'){if(editMode){setEdit(false);return;}stopPlay();return;}
   if(k==='v'){const o=['game','fingers','notation'];setView(o[(o.indexOf(S.view)+1)%3]);return;}
   if((e.key==='ArrowRight'||e.key==='ArrowLeft')&&tg!=='INPUT'){e.preventDefault();stepNote(e.key==='ArrowRight'?1:-1);return;}
   if(k==='z'){kbOct=Math.max(2,kbOct-1);toast('Keyboard octave '+kbOct);return;}
@@ -1434,9 +1547,9 @@ function parseXML(text){
   const root=doc.documentElement;if(root.nodeName!=='score-partwise')throw new Error('Only “partwise” MusicXML is supported (export again from your notation program).');
   const txt=(el,sel)=>{const e=el.querySelector(sel);return e?e.textContent.trim():'';};
   const title=txt(doc,'work-title')||txt(doc,'movement-title');
-  const base={C:0,D:2,E:4,F:5,G:7,A:9,B:11};let best=null,tempo=null,ts=null,applied=false;
+  const base={C:0,D:2,E:4,F:5,G:7,A:9,B:11};let best=null,bestHarm=[],anyHarm=[],tempo=null,ts=null,applied=false;
   for(const part of doc.querySelectorAll('part')){
-    let div=1,cursor=0,mstart=0,trans=0,lastStart=0;const out=[],open={};
+    let div=1,cursor=0,mstart=0,trans=0,lastStart=0;const out=[],open={},harm=[];
     for(const meas of [...part.children].filter(c=>c.nodeName==='measure')){
       cursor=mstart;let maxc=mstart;
       for(const el of meas.children){
@@ -1444,6 +1557,7 @@ function parseXML(text){
         if(nm==='attributes'){const dv=txt(el,'divisions');if(dv)div=+dv;const t=el.querySelector('time');if(t&&!ts)ts=[+txt(t,'beats'),+txt(t,'beat-type')];
           const tr=el.querySelector('transpose');if(tr){trans=(+txt(tr,'chromatic')||0)+12*(+txt(tr,'octave-change')||0);if(trans)applied=true;}}
         else if(nm==='direction'||nm==='sound'){const s=nm==='sound'?el:el.querySelector('sound[tempo]');if(s&&s.hasAttribute('tempo')&&tempo==null)tempo=+s.getAttribute('tempo');}
+        else if(nm==='harmony'){const h=xmlHarmony(el,(cursor+(+txt(el,'offset')||0))/div,trans);if(h)harm.push(h);}
         else if(nm==='backup')cursor-=+txt(el,'duration');
         else if(nm==='forward')cursor+=+txt(el,'duration');
         else if(nm==='note'){
@@ -1462,10 +1576,55 @@ function parseXML(text){
       }
       mstart=maxc;
     }
-    if(out.length&&(!best||out.length>best.length))best=out;
+    if(out.length&&(!best||out.length>best.length)){best=out;bestHarm=harm;}
+    if(!anyHarm.length&&harm.length)anyHarm=harm;
   }
   if(!best)throw new Error('No notes found in this MusicXML');
-  return{title,bpm:Math.round(tempo||100),ts:ts||[4,4],notes:best,applied};
+  return{title,bpm:Math.round(tempo||100),ts:ts||[4,4],notes:best,applied,harm:bestHarm.length?bestHarm:anyHarm};
+}
+
+/* ---------- MusicXML chord symbols ---------- */
+const XKIND={major:'',minor:'m',augmented:'aug',diminished:'dim',dominant:'7','major-seventh':'maj7','minor-seventh':'m7','diminished-seventh':'dim7','augmented-seventh':'7#5','half-diminished':'m7b5','major-minor':'mM7','major-sixth':'6','minor-sixth':'m6','dominant-ninth':'9','major-ninth':'maj9','minor-ninth':'m9','dominant-11th':'11','major-11th':'maj11','minor-11th':'m11','dominant-13th':'13','major-13th':'maj13','minor-13th':'m13','suspended-second':'sus2','suspended-fourth':'sus4',power:'5'};
+const CHART_N=['C','Db','D','Eb','E','F','Gb','G','Ab','A','Bb','B'];
+function xmlHarmony(el,beat,trans){
+  const q=(e,sel)=>{const x=e.querySelector(sel);return x?x.textContent.trim():'';};
+  const rs=q(el,'root > root-step');if(!rs||!(rs in PCN))return null;
+  const root=(((PCN[rs]+(+q(el,'root > root-alter')||0)+trans)%12)+12)%12;
+  const ke=el.querySelector('kind');let tail='';
+  if(ke){const k=ke.textContent.trim();if(k in XKIND)tail=XKIND[k];else if(k==='none')return null;else tail=(ke.getAttribute('text')||'').replace(/[^A-Za-z0-9#b♯♭Δø°+\-]/g,'');}
+  for(const d of el.querySelectorAll('degree')){
+    const v=+q(d,'degree-value'),a=+q(d,'degree-alter')||0,t=q(d,'degree-type');
+    if(!v||t==='subtract')continue;
+    if(a)tail+=(a<0?'b':'#')+v;
+    else if(t==='add'&&!new RegExp(String(v)).test(tail)&&v>=9)tail+='add'+v;
+  }
+  let bass=null;const bs=q(el,'bass > bass-step');
+  if(bs&&bs in PCN)bass=(((PCN[bs]+(+q(el,'bass > bass-alter')||0)+trans)%12)+12)%12;
+  return{b:beat,root,tail,bass};
+}
+// harm: [{b,root,tail,bass}] in written pitch; sh = semitones to subtract to get concert pitch.
+function harmToChart(harm,sh,bbeats,minBars){
+  if(!harm||!harm.length)return null;
+  const hs=harm.map(h=>({b:Math.max(0,Math.round(h.b*4)/4),sym:CHART_N[(((h.root-sh)%12)+12)%12]+h.tail+(h.bass!=null?'/'+CHART_N[(((h.bass-sh)%12)+12)%12]:'')}))
+    .map(h=>parseChord(h.sym)?h:{b:h.b,sym:h.sym.replace(/^([A-G][b#]?).*?(\/[A-G][b#]?)?$/,'$1$2')})
+    .filter(h=>parseChord(h.sym)).sort((a,b)=>a.b-b.b);
+  if(!hs.length)return null;
+  const lastB=hs[hs.length-1].b,n=Math.max(minBars||1,Math.floor(lastB/bbeats+1e-6)+1),bars=[];
+  let cur=hs[0].sym,ix=0;
+  for(let i=0;i<n;i++){
+    const lo=i*bbeats,hi=lo+bbeats,items=[];
+    if(ix<hs.length&&hs[ix].b>lo+1e-6)items.push({b:lo,sym:cur});
+    while(ix<hs.length&&hs[ix].b<hi-1e-6){
+      const h=hs[ix++];
+      if(items.length&&items[items.length-1].b>=h.b-1e-6)items.pop();
+      items.push({b:Math.max(lo,h.b),sym:h.sym});cur=h.sym;
+    }
+    if(!items.length)items.push({b:lo,sym:cur});
+    const m=[];for(const it of items){if(!m.length||m[m.length-1].sym!==it.sym)m.push({...it});}
+    const fmt=x=>String(Math.round(x*1000)/1000);
+    bars.push(m.length===1?m[0].sym:m.map((it,k)=>it.sym+':'+fmt((k+1<m.length?m[k+1].b:hi)-it.b)).join(' '));
+  }
+  return '| '+bars.join(' | ')+' |';
 }
 async function unzipXml(buf){
   const u8=new Uint8Array(buf),dv=new DataView(buf);let e=u8.length-22;
@@ -1507,9 +1666,9 @@ $('#addFile').addEventListener('change',async e=>{
       $('#addNote').textContent='MIDI loaded. Pick the melody track if needed; the highest note at each moment is used.';
     }else{
       const text=ext==='mxl'?await unzipXml(buf):new TextDecoder().decode(buf);
-      const r=parseXML(text);parsed={title:r.title||f.name.replace(/\.[^.]+$/,''),bpm:r.bpm,ts:r.ts,notes:r.notes,applied:r.applied};
+      const r=parseXML(text);parsed={title:r.title||f.name.replace(/\.[^.]+$/,''),bpm:r.bpm,ts:r.ts,notes:r.notes,applied:r.applied,harm:r.harm};
       $('#trackRow').style.display='none';
-      $('#addNote').textContent=r.applied?'MusicXML loaded — its transposition was applied (now concert pitch).':'MusicXML loaded.';
+      $('#addNote').textContent=(r.applied?'MusicXML loaded — its transposition was applied (now concert pitch).':'MusicXML loaded.')+(r.harm&&r.harm.length?' Found '+r.harm.length+' chord symbols — they’ll drive the backing band.':' No chord symbols in this file.');
       if(r.applied){$('#addSrc').value='concert';$('#addSrc').disabled=true;}else $('#addSrc').disabled=false;
     }
     if(!$('#addTitle').value)$('#addTitle').value=parsed.title;
@@ -1551,6 +1710,11 @@ $('#addOk').addEventListener('click',()=>{
         const bu2=ts[0]*4/ts[1];let mx=0;for(const u of units)if(u.e>mx)mx=u.e;
         try{def.chart=detectChart(band,bu2,Math.max(1,Math.ceil(mx/(bu2*12))));charts[def.id]={chart:def.chart,repeat:false};saveCharts();}catch(e){}
       }
+    }
+    if(!txt&&parsed&&parsed.harm&&parsed.harm.length&&!def.chart){
+      let mx=0;for(const u of units)if(u.e>mx)mx=u.e;
+      const bb2=ts[0]*4/ts[1],ch=harmToChart(parsed.harm,parsed.applied?0:sh,bb2,Math.max(1,Math.ceil(mx/(bb2*12))));
+      if(ch){def.chart=ch;charts[def.id]={chart:ch,repeat:false};saveCharts();}
     }
     custom.push(def);saveCustom();fillSongSel();$('#dlgAdd').close();loadSong(def);
   }catch(err){$('#addErr').textContent=err.message||String(err);}
@@ -1595,6 +1759,7 @@ function syncUI(light){
   updateLoopMarks();showProgress();setStatus();fingKey='';saveS();
 }
 function setView(v){
+  if(v!=='notation'&&editMode)setEdit(false);
   S.view=v;$('#gameWrap').style.height='';$('#gameWrap').style.display=(v==='game'||v==='fingers')?'block':'none';$('#notationWrap').style.display=v==='notation'?'block':'none';
   $$('#viewbar [data-view]').forEach(b=>b.classList.toggle('on',b.dataset.view===v));
   if(v==='notation')buildNotation();saveS();
