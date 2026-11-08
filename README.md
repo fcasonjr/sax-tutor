@@ -84,10 +84,13 @@ Music that was converted from a PDF or photo by a scanning program (for example 
 The lick menu is grouped:
 
 - **Warm-ups**: scales, a blues lick, a ii–V–I pattern and a chromatic exercise.
-- **Bebop & enclosures (concert C)**: twelve original lines with chords: bebop scales, enclosures of the root, 3rd and 5th, a minor ii–V–i, chromatic approach notes, a ♭9 cell, a turnaround and a blues phrase. Use the **Key** menu, or **Practice all keys**, to play them in every key.
-- **Beginner exercises (written for alto)**: long tones, scales, arpeggios, rhythm patterns and simple folk tunes (Hot Cross Buns, Mary Had a Little Lamb, Twinkle Twinkle, Ode to Joy and others), printed the way a beginner alto book writes them. The Key menu shows concert key names, so the original key appears as E♭.
+- **Bebop & enclosures (concert C)**: twelve original lines with chords: bebop scales, enclosures of the root, 3rd and 5th, a minor ii–V–i, chromatic approach notes, a ♭9 cell, a turnaround and a blues phrase.
+- **Bebop · minor & dominant**: seven lines on minor 7, minor 6, minor blues, dominant arpeggio, diminished, altered and mixolydian sounds.
+- **Bebop · triplets**: five triplet lines, including an enclosure and a turnaround.
+- **Bebop etudes**: four longer pieces with changes: ii–V–Is in three keys (8 bars), a 12-bar bebop blues, a triplet etude and a minor ii–V–i etude.
+- **Beginner exercises (written for alto)**: long tones, scales, arpeggios, rhythm patterns, simple folk tunes (Hot Cross Buns, Mary Had a Little Lamb, Twinkle Twinkle, Ode to Joy and others) and an 8-bar etude, printed the way a beginner alto book writes them. The Key menu shows concert key names, so the original key appears as E♭.
 
-The same lines are also provided as MusicXML files (`Sax-Tutor-practice-lines.zip`) that can be added one at a time with **＋ Import / type a lick**.
+Use the **Key** menu, or **Practice all keys**, to play any line in every key. The same lines are also provided as MusicXML files (`Sax-Tutor-practice-lines.zip`) that can be added one at a time with **＋ Import / type a lick**.
 
 ## Phones and tablets
 
