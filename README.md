@@ -88,6 +88,7 @@ The lick menu is grouped:
 - **Bebop · minor & dominant**: seven lines on minor 7, minor 6, minor blues, dominant arpeggio, diminished, altered and mixolydian sounds.
 - **Bebop · triplets**: five triplet lines, including an enclosure and a turnaround.
 - **Bebop etudes**: four longer pieces with changes: ii–V–Is in three keys (8 bars), a 12-bar bebop blues, a triplet etude and a minor ii–V–i etude.
+- **Modes (concert C)**: Ionian, Dorian, Phrygian, Lydian, Mixolydian, Aeolian and Locrian, each as a one-octave scale up and down on C with its chord (Cmaj7, Cm7, Cm7♭9, Cmaj7♯11, C7, Cm7, Cm7♭5), so the characteristic notes stand out. A last piece runs through all seven modes of C major, each from its own root.
 - **Beginner exercises (written for alto)**: long tones, scales, arpeggios, rhythm patterns, simple folk tunes (Hot Cross Buns, Mary Had a Little Lamb, Twinkle Twinkle, Ode to Joy and others) and an 8-bar etude, printed the way a beginner alto book writes them. The Key menu shows concert key names, so the original key appears as E♭.
 
 Use the **Key** menu, or **Practice all keys**, to play any line in every key. The same lines are also provided as MusicXML files (`Sax-Tutor-practice-lines.zip`) that can be added one at a time with **＋ Import / type a lick**.
