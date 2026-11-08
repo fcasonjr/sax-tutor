@@ -79,6 +79,16 @@ Timing is snapped to a sixteenth or triplet-eighth grid so the notation stays re
 
 Music that was converted from a PDF or photo by a scanning program (for example Audiveris, MuseScore or PlayScore) usually has a few wrong notes. Open the lick, switch to the notation view and press **✎ Edit notes**. Tap a note, compare it with your page, then change its pitch (♯/♭ or octave), make it shorter or longer, move it a sixteenth earlier or later, add a note after it, or delete it. **Undo** goes back one step, and edits are saved on your device. If you edit a built-in lick, the app edits a copy.
 
+## Built-in practice lines
+
+The lick menu is grouped:
+
+- **Warm-ups**: scales, a blues lick, a ii–V–I pattern and a chromatic exercise.
+- **Bebop & enclosures (concert C)**: twelve original lines with chords: bebop scales, enclosures of the root, 3rd and 5th, a minor ii–V–i, chromatic approach notes, a ♭9 cell, a turnaround and a blues phrase. Use the **Key** menu, or **Practice all keys**, to play them in every key.
+- **Beginner exercises (written for alto)**: long tones, scales, arpeggios, rhythm patterns and simple folk tunes (Hot Cross Buns, Mary Had a Little Lamb, Twinkle Twinkle, Ode to Joy and others), printed the way a beginner alto book writes them. The Key menu shows concert key names, so the original key appears as E♭.
+
+The same lines are also provided as MusicXML files (`Sax-Tutor-practice-lines.zip`) that can be added one at a time with **＋ Import / type a lick**.
+
 ## Phones and tablets
 
 - **Android (Chrome):** MIDI works over USB-OTG or Bluetooth MIDI, the same as on a computer.

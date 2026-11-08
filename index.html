@@ -500,8 +500,34 @@ const LIB=[
  {id:'trip',title:'Triplet arpeggios · Cmaj7 – Dm7 – G7',bpm:80,ts:[4,4],tonic:0,chart:'| Cmaj7 Dm7 | G7 Cmaj7 |',dsl:'C4/t E4 G4 B4 G4 E4 D4 F4 A4 C5 A4 F4 G3 B3 D4 F4 D4 B3 C4/h'},
  {id:'blues',title:'C blues scale lick',bpm:100,ts:[4,4],tonic:0,chart:'| C7 | C7 |',dsl:'C4/e Eb4 F4 F#4 G4/q Bb4 C5/e Bb4 G4 F4 Eb4 C4 r/q'},
  {id:'scale',title:'C major scale · eighths',bpm:100,ts:[4,4],tonic:0,chart:'| Cmaj7 | Cmaj7 |',dsl:'C4/e D4 E4 F4 G4 A4 B4 C5 B4 A4 G4 F4 E4 D4 C4 r/e'},
- {id:'chrom',title:'Chromatic warm‑up · sixteenths',bpm:70,ts:[4,4],tonic:0,chart:'| Cmaj7 | Cmaj7 |',dsl:'C4/s C#4 D4 Eb4 E4 F4 F#4 G4 G#4 A4 Bb4 B4 C5 B4 Bb4 A4 Ab4 G4 F#4 F4 E4 Eb4 D4 C#4 C4/q r/q r/h'}
-].map(d=>({id:d.id,title:d.title,bpm:d.bpm,ts:d.ts,tonic:d.tonic,units:normalize(parseDSL(d.dsl)),chart:d.chart,builtin:true}));
+ {id:'chrom',title:'Chromatic warm‑up · sixteenths',bpm:70,ts:[4,4],tonic:0,chart:'| Cmaj7 | Cmaj7 |',dsl:'C4/s C#4 D4 Eb4 E4 F4 F#4 G4 G#4 A4 Bb4 B4 C5 B4 Bb4 A4 Ab4 G4 F#4 F4 E4 Eb4 D4 C#4 C4/q r/q r/h'},
+ /* Bebop and enclosure lines are in concert C. Beginner exercises are written for alto (wr:9 converts them to concert). */
+ {id:"bb-major-desc",title:"Major bebop scale · descending from G",bpm:110,ts:[4,4],tonic:0,chart:"| Cmaj7 | Cmaj7 |",group:"Bebop & enclosures (concert C)",dsl:"G5/e F5 E5 D5 C5 B4 A4 G#4 G4 F4 E4 D4 C4/h"},
+ {id:"bb-dom-up",title:"Dominant bebop scale up → Cmaj7 arpeggio",bpm:110,ts:[4,4],tonic:0,chart:"| G7 | Cmaj7 |",group:"Bebop & enclosures (concert C)",dsl:"G3/e A3 B3 C4 D4 E4 F4 F#4 G4/q E4 C4/h"},
+ {id:"bb-dorian",title:"Dorian bebop scale · Dm7",bpm:110,ts:[4,4],tonic:0,chart:"| Dm7 | Dm7 |",group:"Bebop & enclosures (concert C)",dsl:"C5/e B4 A4 G4 F#4 F4 E4 D4 F4/e A4 C5 A4 D5/h"},
+ {id:"bb-ii-v-i",title:"ii–V–I · enclosure of the 3rd of G7",bpm:100,ts:[4,4],tonic:0,chart:"| Dm7 | G7 | Cmaj7 |",group:"Bebop & enclosures (concert C)",dsl:"F4/e A4 C5 E5 D5 C5 A4 F4 G4/e D5 C5 Bb4 B4 D5 F5 E5 C5/h r/h"},
+ {id:"bb-enc-3rd",title:"Enclosure of the 3rd (F–E♭–E) · Cmaj7",bpm:100,ts:[4,4],tonic:0,chart:"| Cmaj7 | Cmaj7 |",group:"Bebop & enclosures (concert C)",dsl:"C4/e D4 F4 Eb4 E4 G4 B4 C5 B4/e A4 G4 E4 C4/h"},
+ {id:"bb-enc-5th",title:"Enclosure of the 5th (A–F♯–G) · Cmaj7",bpm:100,ts:[4,4],tonic:0,chart:"| Cmaj7 | Cmaj7 |",group:"Bebop & enclosures (concert C)",dsl:"C4/e E4 A4 F#4 G4 B4 D5 C5 B4/e A4 G4 E4 C4/h"},
+ {id:"bb-enc-root",title:"Enclosure of the root (D–B–C) · Cmaj7",bpm:100,ts:[4,4],tonic:0,chart:"| Cmaj7 | Cmaj7 |",group:"Bebop & enclosures (concert C)",dsl:"G4/e E4 D5 B4 C5 G4 E4 C4 E4/q G4 C5/h"},
+ {id:"bb-enc-minor",title:"Minor ii–V–i · enclosure of the E♭",bpm:90,ts:[4,4],tonic:0,chart:"| Dm7b5 | G7 | Cm7 | Cm7 |",group:"Bebop & enclosures (concert C)",dsl:"D4/e F4 Ab4 C5 Ab4 F4 D4 F4 B3/e D4 F4 Ab4 G4 F4 D4 B3 C4/e G4 F4 D4 Eb4 G4 Bb4 C5 C5/w"},
+ {id:"bb-chrom-ct",title:"Chromatic approach from below · Cmaj7 tones",bpm:100,ts:[4,4],tonic:0,chart:"| Cmaj7 | Cmaj7 |",group:"Bebop & enclosures (concert C)",dsl:"B3/e C4 Eb4 E4 F#4 G4 Bb4 B4 C5/e B4 G4 E4 C4/h"},
+ {id:"bb-b9-cell",title:"1–♭9–3–5 cell over G7",bpm:100,ts:[4,4],tonic:0,chart:"| G7 | Cmaj7 |",group:"Bebop & enclosures (concert C)",dsl:"G4/e Ab4 B4 D5 F5 D5 B4 Ab4 G4/q E4 C4/h"},
+ {id:"bb-turnaround",title:"Turnaround · Cmaj7 A7 | Dm7 G7",bpm:100,ts:[4,4],tonic:0,chart:"| Cmaj7 A7 | Dm7 G7 |",group:"Bebop & enclosures (concert C)",dsl:"E4/e G4 C5 B4 C#5 A4 E4 G4 F4/e A4 D5 C5 B4 D5 F5 E5"},
+ {id:"bb-blues",title:"Bebop blues phrase · C7 – F7 – C7",bpm:110,ts:[4,4],tonic:0,chart:"| C7 | F7 | C7 | C7 |",group:"Bebop & enclosures (concert C)",dsl:"C4/e Eb4 E4 G4 Bb4 G4 E4 C4 A4/e C5 Eb5 C5 A4 F4 Ab4 A4 G4/e E4 C4 E4 G4 Bb4 G4 E4 C4/h r/h"},
+ {id:"bg-long",title:"Long tones · G A B C",bpm:60,ts:[4,4],tonic:3,wr:9,group:"Beginner exercises (written for alto)",dsl:"G4/w A4 B4 C5"},
+ {id:"bg-mary",title:"Mary Had a Little Lamb · B A G",bpm:80,ts:[4,4],tonic:3,wr:9,group:"Beginner exercises (written for alto)",dsl:"B4/q A4 G4 A4 B4 B4 B4/h A4/q A4 A4/h B4/q D5 D5/h B4/q A4 G4 A4 B4 B4 B4 B4 A4 A4 B4 A4 G4/w"},
+ {id:"bg-hcb",title:"Hot Cross Buns · B A G",bpm:80,ts:[4,4],tonic:3,wr:9,group:"Beginner exercises (written for alto)",dsl:"B4/q A4 G4/h B4/q A4 G4/h G4/e G4 G4 G4 A4 A4 A4 A4 B4/q A4 G4/h"},
+ {id:"bg-scale-q",title:"C major scale · quarter notes",bpm:80,ts:[4,4],tonic:3,wr:9,group:"Beginner exercises (written for alto)",dsl:"C4/q D4 E4 F4 G4 A4 B4 C5 B4 A4 G4 F4 E4 D4 C4/h"},
+ {id:"bg-arp",title:"C and G arpeggios · quarter notes",bpm:80,ts:[4,4],tonic:3,chart:"| Eb | Eb | Bb | Bb |",wr:9,group:"Beginner exercises (written for alto)",dsl:"C4/q E4 G4 E4 C4 E4 G4/h G4/q B4 D5 B4 G4 B4 D5/h"},
+ {id:"bg-scale-e",title:"C major scale · eighth notes",bpm:72,ts:[4,4],tonic:3,wr:9,group:"Beginner exercises (written for alto)",dsl:"C4/e D4 E4 F4 G4 A4 B4 C5 C5 B4 A4 G4 F4 E4 D4 C4"},
+ {id:"bg-twinkle",title:"Twinkle, Twinkle, Little Star",bpm:84,ts:[4,4],tonic:3,wr:9,group:"Beginner exercises (written for alto)",dsl:"C4/q C4 G4 G4 A4 A4 G4/h F4/q F4 E4 E4 D4 D4 C4/h G4/q G4 F4 F4 E4 E4 D4/h G4/q G4 F4 F4 E4 E4 D4/h C4/q C4 G4 G4 A4 A4 G4/h F4/q F4 E4 E4 D4 D4 C4/h"},
+ {id:"bg-frere",title:"Frère Jacques",bpm:84,ts:[4,4],tonic:3,wr:9,group:"Beginner exercises (written for alto)",dsl:"C4/q D4 E4 C4 C4 D4 E4 C4 E4 F4 G4/h E4/q F4 G4/h G4/e A4 G4 F4 E4/q C4 G4/e A4 G4 F4 E4/q C4 C4/q G4 C5/h C4/q G4 C5/h"},
+ {id:"bg-clair",title:"Au Clair de la Lune",bpm:72,ts:[4,4],tonic:3,wr:9,group:"Beginner exercises (written for alto)",dsl:"C4/q C4 C4 D4 E4/h D4/h C4/q E4 D4 D4 C4/w"},
+ {id:"bg-ode",title:"Ode to Joy",bpm:84,ts:[4,4],tonic:3,wr:9,group:"Beginner exercises (written for alto)",dsl:"E4/q E4 F4 G4 G4 F4 E4 D4 C4 C4 D4 E4 E4/q. D4/e D4/h E4/q E4 F4 G4 G4 F4 E4 D4 C4 C4 D4 E4 D4/q. C4/e C4/h"},
+ {id:"bg-waltz",title:"Waltz in 3/4 · G A B",bpm:100,ts:[3,4],tonic:3,wr:9,group:"Beginner exercises (written for alto)",dsl:"G4/q A4 B4 B4 A4 G4 G4/h r/q"},
+ {id:"bg-sync",title:"Eighth–quarter–eighth rhythm · G A B",bpm:80,ts:[4,4],tonic:3,wr:9,group:"Beginner exercises (written for alto)",dsl:"G4/e A4/q B4/e A4/e B4/q G4/e A4/e B4/q C5/e B4/e A4/q G4/e G4/e A4/q B4/e A4/e B4/q G4/e G4/h r/h"},
+ {id:"bg-dotted",title:"Dotted quarter + eighth · G A B",bpm:80,ts:[4,4],tonic:3,wr:9,group:"Beginner exercises (written for alto)",dsl:"G4/q. A4/e B4/q. A4/e G4/q A4 G4/h"}
+].map(d=>({id:d.id,title:d.title,bpm:d.bpm,ts:d.ts,tonic:d.tonic,units:normalize(parseDSL(d.dsl).map(n=>({...n,m:n.m-(d.wr||0)}))),chart:d.chart,group:d.group||'Warm-ups',builtin:true}));
 let custom=[];
 try{custom=JSON.parse(localStorage.getItem('saxtutor.songs')||'[]')}catch(e){}
 const saveCustom=()=>{try{localStorage.setItem('saxtutor.songs',JSON.stringify(custom));return true}catch(e){toast('Couldn’t save — browser storage is full');return false}};
@@ -1728,7 +1754,8 @@ $('#btnDel').addEventListener('click',()=>{
 
 /* ---------- UI wiring ---------- */
 function fillSongSel(){
-  $('#songSel').innerHTML=allSongs().map(s=>`<option value="${s.id}">${s.custom?'★ ':''}${s.title}</option>`).join('');
+  const gs=[];for(const x of allSongs()){const g=x.custom?'★ My licks':(x.group||'Warm-ups');let e=gs.find(q=>q.g===g);if(!e){e={g,l:[]};gs.push(e);}e.l.push(x);}
+  $('#songSel').innerHTML=gs.map(e=>`<optgroup label="${e.g}">`+e.l.map(x=>`<option value="${x.id}">${x.title}</option>`).join('')+'</optgroup>').join('');
   if(song)$('#songSel').value=song.id;
 }
 function fillSelects(){
