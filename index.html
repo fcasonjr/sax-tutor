@@ -779,7 +779,7 @@ function rebuildPlan(){
   plan.sort((a,b)=>a.u-b.u);
   if(typeof T!=='undefined'&&T.playing)schedPlanPtr();
 }
-function schedPlanPtr(){let i=0;while(i<plan.length&&plan[i].u<T.pos-1e-6)i++;T.nextBand=i;}
+function schedPlanPtr(base){if(base==null)base=T.pos;let i=0;while(i<plan.length&&plan[i].u<base-1e-6)i++;T.nextBand=i;}
 
 /* ---------- transport ---------- */
 const T={playing:false,resumable:false,pos:0,last:0,waiting:false,nextClick:0,nextNote:0,nextBand:0};
@@ -790,10 +790,12 @@ function resetPass(){
   Object.assign(P,{perfect:0,good:0,ok:0,miss:0,wrong:0,extra:0,combo:0,sumDt:0,nDt:0});
   refreshNotationMarks();updateStats();
 }
-function schedReset(){
-  const ls=loopStart();T.nextClick=Math.ceil(T.pos-1e-9);
-  let i=0;while(i<notes.length&&notes[i].u0<T.pos-1e-6)i++;T.nextNote=i;schedPlanPtr();
-  if(T.pos<ls){T.nextClick=Math.ceil(T.pos-1e-9);}
+/* base: where scheduling restarts. After a loop wrap this is the exact loop start, even though the playhead
+   has run a few milliseconds past it, so the first click, note and band hit of the new pass still sound. */
+function schedReset(base){
+  if(base==null)base=T.pos;
+  T.nextClick=Math.ceil(base-1e-9);
+  let i=0;while(i<notes.length&&notes[i].u0<base-1e-6)i++;T.nextNote=i;schedPlanPtr(base);
 }
 function startPlay(){
   ensureAudio();if(T.playing)return;
@@ -818,6 +820,7 @@ function stepNote(dir){
 const msPerBeat=()=>60000/bpmEff();
 function capMs(n){return Math.max(45,Math.min(OKW,.45*n.gapB*msPerBeat()));}
 function firstPending(){for(const n of notes){if(inLoop(n)&&n.st===0)return n;}return null;}
+const LATE=.15; // beats: how late an event may still be played (covers the wrap overshoot)
 function tick(){
   const now=performance.now();
   if(T.playing){
@@ -833,7 +836,7 @@ function tick(){
     if(T.pos>=le-1e-9){
       finishPass(false);
       T.pos=ls+Math.max(0,T.pos-le);
-      advanceKey();resetPass();schedReset();
+      advanceKey();resetPass();schedReset(ls);
     }
     if(!S.wait){
       for(const n of notes){if(n.st===0&&inLoop(n)&&T.pos>n.u0&&(T.pos-n.u0)*msPerBeat()>capMs(n)){mark(n,2,'miss');}}
@@ -842,13 +845,13 @@ function tick(){
       const look=.18*bpmEff()/60,spb=60/bpmEff();
       if(S.metro&&!T.waiting){
         while(T.nextClick<=T.pos+look&&T.nextClick<le-1e-9){
-          if(T.nextClick>=T.pos-.02){const rel=T.nextClick-ls;clickAt(actx.currentTime+Math.max(0,(T.nextClick-T.pos)*spb),((rel%bb)+bb)%bb<1e-6);}
+          if(T.nextClick>=T.pos-LATE){const rel=T.nextClick-ls;clickAt(actx.currentTime+Math.max(0,(T.nextClick-T.pos)*spb),((rel%bb)+bb)%bb<1e-6);}
           T.nextClick++;
         }
       }else{ while(T.nextClick<=T.pos+look)T.nextClick++; }
       while(T.nextBand<plan.length&&plan[T.nextBand].u<=T.pos+look){
         const ev=plan[T.nextBand++];
-        if(!S.back||S.wait||ev.u<ls-1e-6||ev.u>=le-1e-6||ev.u<T.pos-.03)continue;
+        if(!S.back||S.wait||ev.u<ls-1e-6||ev.u>=le-1e-6||ev.u<T.pos-LATE)continue;
         const at=actx.currentTime+Math.max(0,(ev.u-T.pos)*spb);
         if(ev.k==='bass'){if(S.bBass)vBass(at,ev.d*spb,ev.m,ev.v);}
         else if(ev.k==='keys'){if(S.bKeys)vKeys(at,ev.d*spb,ev.m,ev.v);}
@@ -856,7 +859,7 @@ function tick(){
       }
       while(T.nextNote<notes.length&&notes[T.nextNote].u0<=T.pos+look){
         const n=notes[T.nextNote];
-        if(S.hear&&!S.wait&&inLoop(n)&&n.u0>=T.pos-.02)toneAt(actx.currentTime+Math.max(0,(n.u0-T.pos)*spb),(n.u1-n.u0)*spb,n.m+shift());
+        if(S.hear&&!S.wait&&inLoop(n)&&n.u0>=T.pos-LATE)toneAt(actx.currentTime+Math.max(0,(n.u0-T.pos)*spb),(n.u1-n.u0)*spb,n.m+shift());
         T.nextNote++;
       }
     }
