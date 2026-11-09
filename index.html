@@ -46,6 +46,13 @@ canvas{width:100%;height:100%;display:block}
 #saxsvg text{fill:#6b7494;font-size:11px;text-anchor:middle;pointer-events:none}
 #saxsvg .k.on+text{fill:#1a1200}
 #saxsvg .body{fill:#171b26;stroke:#2b3350;stroke-width:2}
+#altRow{margin-top:6px;min-height:0}
+#altRow .lab{font-size:11px;color:var(--mut);display:block;margin-bottom:2px}
+.altchip{font-size:11px;padding:3px 8px;margin:2px;border-radius:12px;border:1px solid var(--line);background:var(--bg2);color:var(--txt);cursor:pointer}
+.altchip.sug{border-color:var(--acc);color:var(--acc)}
+.altchip.on{background:var(--acc);border-color:var(--acc);color:#1a1200}
+#altHint{font-size:11px;color:var(--mut);margin-top:3px;line-height:1.35}
+#songTip{margin:4px 0 0;font-size:12px;color:var(--mut);line-height:1.4}
 #upNext{display:flex;gap:4px;justify-content:center;flex-wrap:wrap;margin-top:6px}
 #upNext span{padding:1px 7px;border-radius:999px;font-size:12px;font-weight:700;color:#10131a}
 #fingWarn{color:var(--bad);font-size:12px;min-height:16px}
@@ -220,6 +227,7 @@ body.narrow .card.collapsed>*:not(h3){display:none}
       <div id="fingName" class="fl">–</div>
       <div id="fingSub" class="fl"></div>
       <svg id="saxsvg" viewBox="0 0 160 330"></svg>
+      <div id="altRow" class="fl"></div>
       <div id="fingWarn" class="fl"></div>
       <div id="upNext" class="fl"></div>
     </aside>
@@ -251,6 +259,7 @@ body.narrow .card.collapsed>*:not(h3){display:none}
         <button id="btnDel" title="Delete this imported lick">🗑</button>
       </div>
       <div class="row small mut" id="songInfo"></div>
+      <div id="songTip" class="small"></div>
       <div class="row"><span class="lab">Progress</span>
         <span class="small" id="prog">–</span></div>
       <div class="row"><button id="btnProg2">📈 Open progress details</button></div>
@@ -546,6 +555,16 @@ const LIB=[
  {id:"cf-arp-dom",title:"Dominant 7 arpeggios · cycle of 4ths",bpm:100,ts:[4,4],tonic:0,chart:"| C7 | F7 | Bb7 | Eb7 | Ab7 | Db7 | Gb7 | B7 | E7 | A7 | D7 | G7 |",group:"Circle of 5ths & 4ths (concert)",dsl:"C4/e E4 G4 Bb4 C5 Bb4 G4 E4 F4 A4 C5 Eb5 F5 Eb5 C5 A4 Bb3 D4 F4 Ab4 Bb4 Ab4 F4 D4 Eb4 G4 Bb4 Db5 Eb5 Db5 Bb4 G4 Ab3 C4 Eb4 Gb4 Ab4 Gb4 Eb4 C4 Db4 F4 Ab4 B4 Db5 B4 Ab4 F4 Gb4 Bb4 Db5 E5 Gb5 E5 Db5 Bb4 B3 Eb4 Gb4 A4 B4 A4 Gb4 Eb4 E4 Ab4 B4 D5 E5 D5 B4 Ab4 A3 Db4 E4 G4 A4 G4 E4 Db4 D4 Gb4 A4 C5 D5 C5 A4 Gb4 G4 B4 D5 F5 G5 F5 D5 B4"},
  {id:"cf-arp-min",title:"Minor 7 arpeggios · cycle of 4ths",bpm:100,ts:[4,4],tonic:0,chart:"| Cm7 | Fm7 | Bbm7 | Ebm7 | Abm7 | Dbm7 | Gbm7 | Bm7 | Em7 | Am7 | Dm7 | Gm7 |",group:"Circle of 5ths & 4ths (concert)",dsl:"C4/e Eb4 G4 Bb4 C5 Bb4 G4 Eb4 F4 Ab4 C5 Eb5 F5 Eb5 C5 Ab4 Bb3 Db4 F4 Ab4 Bb4 Ab4 F4 Db4 Eb4 Gb4 Bb4 Db5 Eb5 Db5 Bb4 Gb4 Ab3 B3 Eb4 Gb4 Ab4 Gb4 Eb4 B3 Db4 E4 Ab4 B4 Db5 B4 Ab4 E4 Gb4 A4 Db5 E5 Gb5 E5 Db5 A4 B3 D4 Gb4 A4 B4 A4 Gb4 D4 E4 G4 B4 D5 E5 D5 B4 G4 A3 C4 E4 G4 A4 G4 E4 C4 D4 F4 A4 C5 D5 C5 A4 F4 G4 Bb4 D5 F5 G5 F5 D5 Bb4"},
  {id:"cf-iivi",title:"ii–V–I through all 12 keys · circle of 4ths (24 bars)",bpm:110,ts:[4,4],tonic:0,chart:"| Dm7 G7 | Cmaj7 | Gm7 C7 | Fmaj7 | Cm7 F7 | Bbmaj7 | Fm7 Bb7 | Ebmaj7 | Bbm7 Eb7 | Abmaj7 | Ebm7 Ab7 | Dbmaj7 | Abm7 Db7 | Gbmaj7 | Dbm7 Gb7 | Bmaj7 | Gbm7 B7 | Emaj7 | Bm7 E7 | Amaj7 | Em7 A7 | Dmaj7 | Am7 D7 | Gmaj7 |",group:"Circle of 5ths & 4ths (concert)",dsl:"F4/e A4 D5 C5 B4 D5 F5 E5 C5 B4 G4 E4 G4 A4 B4 C5 Bb3 D4 G4 F4 E4 G4 Bb4 A4 F4 E4 C4 A3 C4 D4 E4 F4 Eb4 G4 C5 Bb4 A4 C5 Eb5 D5 Bb4 A4 F4 D4 F4 G4 A4 Bb4 Ab3 C4 F4 Eb4 D4 F4 Ab4 G4 Eb4 D4 Bb3 G3 Bb3 C4 D4 Eb4 Db4 F4 Bb4 Ab4 G4 Bb4 Db5 C5 Ab4 G4 Eb4 C4 Eb4 F4 G4 Ab4 Gb4 Bb4 Eb5 Db5 C5 Eb5 Gb5 F5 Db5 C5 Ab4 F4 Ab4 Bb4 C5 Db5 B3 Eb4 Ab4 Gb4 F4 Ab4 B4 Bb4 Gb4 F4 Db4 Bb3 Db4 Eb4 F4 Gb4 E4 Ab4 Db5 B4 Bb4 Db5 E5 Eb5 B4 Bb4 Gb4 Eb4 Gb4 Ab4 Bb4 B4 A3 Db4 Gb4 E4 Eb4 Gb4 A4 Ab4 E4 Eb4 B3 Ab3 B3 Db4 Eb4 E4 D4 Gb4 B4 A4 Ab4 B4 D5 Db5 A4 Ab4 E4 Db4 E4 Gb4 Ab4 A4 G4 B4 E5 D5 Db5 E5 G5 Gb5 D5 Db5 A4 Gb4 A4 B4 Db5 D5 C4 E4 A4 G4 Gb4 A4 C5 B4 G4 Gb4 D4 B3 D4 E4 Gb4 G4"},
+ {id:"dt-groups",title:"Diatonic groups of four · ii–V–I",bpm:70,ts:[4,4],tonic:0,chart:"| Dm7 | G7 | Cmaj7 | Cmaj7 |",group:"Double time \u00b7 16th notes (concert C)",dsl:"D4/s E4 F4 G4 E4 F4 G4 A4 F4 G4 A4 B4 G4 A4 B4 C5 F5 E5 D5 C5 E5 D5 C5 B4 D5 C5 B4 A4 C5 B4 A4 G4 C4 D4 E4 F4 D4 E4 F4 G4 E4 F4 G4 A4 F4 G4 A4 B4 B4 A4 G4 F4 A4 G4 F4 E4 G4 F4 E4 D4 F4 E4 D4 C4",tip:"Double time: four 16th notes per beat. Start around 50% speed. For fast runs, check the alternate fingerings under the diagram: side B♭ for stepwise A–B♭–B, bis B♭ for leaps, side C for fast B–C, 1 & 1 B♭ next to F, chromatic F♯ next to F. The highlighted one is the suggested choice for that note."},
+ {id:"dt-thirds",title:"Scale in thirds · ii–V–I",bpm:70,ts:[4,4],tonic:0,chart:"| Dm7 | G7 | Cmaj7 | Cmaj7 |",group:"Double time \u00b7 16th notes (concert C)",dsl:"D4/s F4 E4 G4 F4 A4 G4 B4 A4 C5 B4 D5 C5 E5 D5 F5 B4 G4 A4 F4 G4 E4 F4 D4 E4 C4 D4 B3 C4 A3 B3 G3 C4 E4 D4 F4 E4 G4 F4 A4 G4 B4 A4 C5 B4 D5 C5 E5 E5 C5 D5 B4 C5 A4 B4 G4 A4 F4 G4 E4 F4 D4 E4 C4",tip:"Double time: four 16th notes per beat. Start around 50% speed. For fast runs, check the alternate fingerings under the diagram: side B♭ for stepwise A–B♭–B, bis B♭ for leaps, side C for fast B–C, 1 & 1 B♭ next to F, chromatic F♯ next to F. The highlighted one is the suggested choice for that note."},
+ {id:"dt-arp",title:"7th-chord arpeggios, up and back · ii–V–I",bpm:70,ts:[4,4],tonic:0,chart:"| Dm7 | G7 | Cmaj7 | Cmaj7 |",group:"Double time \u00b7 16th notes (concert C)",dsl:"D4/s F4 A4 C5 D5 C5 A4 F4 D4 F4 A4 C5 D5 C5 A4 F4 G4 B4 D5 F5 G5 F5 D5 B4 G4 B4 D5 F5 G5 F5 D5 B4 C4 E4 G4 B4 C5 B4 G4 E4 C4 E4 G4 B4 C5 B4 G4 E4 C4 E4 G4 B4 C5 B4 G4 E4 C4 E4 G4 B4 C5 B4 G4 E4",tip:"Double time: four 16th notes per beat. Start around 50% speed. For fast runs, check the alternate fingerings under the diagram: side B♭ for stepwise A–B♭–B, bis B♭ for leaps, side C for fast B–C, 1 & 1 B♭ next to F, chromatic F♯ next to F. The highlighted one is the suggested choice for that note."},
+ {id:"dt-enc",title:"Enclosures in 16ths · Cmaj7",bpm:70,ts:[4,4],tonic:0,chart:"| Cmaj7 | Cmaj7 |",group:"Double time \u00b7 16th notes (concert C)",dsl:"C4/s E4 G4 B4 C5 D5 F5 Eb5 E5 D5 C5 B4 G4 E4 D4 C4 C4/s E4 A4 F#4 G4 B4 D5 C5 B4 G4 E4 C4 E4 G4 B4 C5",tip:"Double time: four 16th notes per beat. Start around 50% speed. For fast runs, check the alternate fingerings under the diagram: side B♭ for stepwise A–B♭–B, bis B♭ for leaps, side C for fast B–C, 1 & 1 B♭ next to F, chromatic F♯ next to F. The highlighted one is the suggested choice for that note."},
+ {id:"dt-bebop",title:"Dominant bebop scale in 16ths · G7 → Cmaj7",bpm:70,ts:[4,4],tonic:0,chart:"| G7 | Cmaj7 |",group:"Double time \u00b7 16th notes (concert C)",dsl:"G5/s F#5 F5 E5 D5 C5 B4 A4 G4 F#4 F4 E4 D4 C4 B3 A3 E4/s G4 B4 C5 B4 G4 E4 C4 E4 G4 B4 C5 E5 C5 G4 E4",tip:"Double time: four 16th notes per beat. Start around 50% speed. For fast runs, check the alternate fingerings under the diagram: side B♭ for stepwise A–B♭–B, bis B♭ for leaps, side C for fast B–C, 1 & 1 B♭ next to F, chromatic F♯ next to F. The highlighted one is the suggested choice for that note."},
+ {id:"dt-blues",title:"Double-time blues phrase · C7 – F7 – C7",bpm:70,ts:[4,4],tonic:0,chart:"| C7 | F7 | C7 | C7 |",group:"Double time \u00b7 16th notes (concert C)",dsl:"C4/s Eb4 E4 G4 Bb4 G4 E4 C4 Eb4 E4 G4 Bb4 C5 Bb4 G4 E4 F4/s A4 C5 Eb5 D5 C5 A4 F4 Ab4 A4 C5 Eb5 F5 Eb5 C5 A4 G4/s E4 C4 E4 G4 Bb4 G4 E4 C4 E4 G4 Bb4 C5 E5 D5 C5 C4/w",tip:"Double time: four 16th notes per beat. Start around 50% speed. For fast runs, check the alternate fingerings under the diagram: side B♭ for stepwise A–B♭–B, bis B♭ for leaps, side C for fast B–C, 1 & 1 B♭ next to F, chromatic F♯ next to F. The highlighted one is the suggested choice for that note."},
+ {id:"dt-minor",title:"Double-time minor ii–V–i · Dm7b5 G7 Cm7",bpm:70,ts:[4,4],tonic:0,chart:"| Dm7b5 | G7 | Cm7 | Cm7 |",group:"Double time \u00b7 16th notes (concert C)",dsl:"D4/s F4 Ab4 C5 Bb4 Ab4 F4 D4 F4 Ab4 C5 Eb5 D5 C5 Ab4 F4 B3/s D4 F4 Ab4 G4 F4 D4 B3 D4 F4 Ab4 B4 D5 B4 Ab4 F4 Eb4/s G4 Bb4 C5 Bb4 G4 Eb4 C4 Eb4 G4 Bb4 D5 C5 Bb4 G4 Eb4 C4/w",tip:"Double time: four 16th notes per beat. Start around 50% speed. For fast runs, check the alternate fingerings under the diagram: side B♭ for stepwise A–B♭–B, bis B♭ for leaps, side C for fast B–C, 1 & 1 B♭ next to F, chromatic F♯ next to F. The highlighted one is the suggested choice for that note."},
+ {id:"dt-cf-maj4",title:"Major scales in 16ths · circle of 4ths",bpm:70,ts:[4,4],tonic:0,chart:"| Cmaj7 | Fmaj7 | Bbmaj7 | Ebmaj7 | Abmaj7 | Dbmaj7 | Gbmaj7 | Bmaj7 | Emaj7 | Amaj7 | Dmaj7 | Gmaj7 |",group:"Double time \u00b7 16th notes (concert C)",dsl:"C4/s D4 E4 F4 G4 A4 B4 C5 D5 C5 B4 A4 G4 F4 E4 D4 F4 G4 A4 Bb4 C5 D5 E5 F5 G5 F5 E5 D5 C5 Bb4 A4 G4 Bb3 C4 D4 Eb4 F4 G4 A4 Bb4 C5 Bb4 A4 G4 F4 Eb4 D4 C4 Eb4 F4 G4 Ab4 Bb4 C5 D5 Eb5 F5 Eb5 D5 C5 Bb4 Ab4 G4 F4 Ab3 Bb3 C4 Db4 Eb4 F4 G4 Ab4 Bb4 Ab4 G4 F4 Eb4 Db4 C4 Bb3 Db4 Eb4 F4 Gb4 Ab4 Bb4 C5 Db5 Eb5 Db5 C5 Bb4 Ab4 Gb4 F4 Eb4 Gb3 Ab3 Bb3 B3 Db4 Eb4 F4 Gb4 Ab4 Gb4 F4 Eb4 Db4 B3 Bb3 Ab3 B3 Db4 Eb4 E4 Gb4 Ab4 Bb4 B4 Db5 B4 Bb4 Ab4 Gb4 E4 Eb4 Db4 E4 Gb4 Ab4 A4 B4 Db5 Eb5 E5 Gb5 E5 Eb5 Db5 B4 A4 Ab4 Gb4 A3 B3 Db4 D4 E4 Gb4 Ab4 A4 B4 A4 Ab4 Gb4 E4 D4 Db4 B3 D4 E4 Gb4 G4 A4 B4 Db5 D5 E5 D5 Db5 B4 A4 G4 Gb4 E4 G3 A3 B3 C4 D4 E4 Gb4 G4 A4 G4 Gb4 E4 D4 C4 B3 A3",tip:"Double time: four 16th notes per beat. Start around 50% speed. For fast runs, check the alternate fingerings under the diagram: side B♭ for stepwise A–B♭–B, bis B♭ for leaps, side C for fast B–C, 1 & 1 B♭ next to F, chromatic F♯ next to F. The highlighted one is the suggested choice for that note."},
+ {id:"dt-cf-mixo",title:"Mixolydian scales in 16ths · cycle of 4ths",bpm:70,ts:[4,4],tonic:0,chart:"| C7 | F7 | Bb7 | Eb7 | Ab7 | Db7 | Gb7 | B7 | E7 | A7 | D7 | G7 |",group:"Double time \u00b7 16th notes (concert C)",dsl:"C4/s D4 E4 F4 G4 A4 Bb4 C5 D5 C5 Bb4 A4 G4 F4 E4 D4 F4 G4 A4 Bb4 C5 D5 Eb5 F5 G5 F5 Eb5 D5 C5 Bb4 A4 G4 Bb3 C4 D4 Eb4 F4 G4 Ab4 Bb4 C5 Bb4 Ab4 G4 F4 Eb4 D4 C4 Eb4 F4 G4 Ab4 Bb4 C5 Db5 Eb5 F5 Eb5 Db5 C5 Bb4 Ab4 G4 F4 Ab3 Bb3 C4 Db4 Eb4 F4 Gb4 Ab4 Bb4 Ab4 Gb4 F4 Eb4 Db4 C4 Bb3 Db4 Eb4 F4 Gb4 Ab4 Bb4 B4 Db5 Eb5 Db5 B4 Bb4 Ab4 Gb4 F4 Eb4 Gb3 Ab3 Bb3 B3 Db4 Eb4 E4 Gb4 Ab4 Gb4 E4 Eb4 Db4 B3 Bb3 Ab3 B3 Db4 Eb4 E4 Gb4 Ab4 A4 B4 Db5 B4 A4 Ab4 Gb4 E4 Eb4 Db4 E4 Gb4 Ab4 A4 B4 Db5 D5 E5 Gb5 E5 D5 Db5 B4 A4 Ab4 Gb4 A3 B3 Db4 D4 E4 Gb4 G4 A4 B4 A4 G4 Gb4 E4 D4 Db4 B3 D4 E4 Gb4 G4 A4 B4 C5 D5 E5 D5 C5 B4 A4 G4 Gb4 E4 G3 A3 B3 C4 D4 E4 F4 G4 A4 G4 F4 E4 D4 C4 B3 A3",tip:"Double time: four 16th notes per beat. Start around 50% speed. For fast runs, check the alternate fingerings under the diagram: side B♭ for stepwise A–B♭–B, bis B♭ for leaps, side C for fast B–C, 1 & 1 B♭ next to F, chromatic F♯ next to F. The highlighted one is the suggested choice for that note."},
+ {id:"dt-cf-groups",title:"Diatonic groups of four · circle of 4ths",bpm:70,ts:[4,4],tonic:0,chart:"| Cmaj7 | Fmaj7 | Bbmaj7 | Ebmaj7 | Abmaj7 | Dbmaj7 | Gbmaj7 | Bmaj7 | Emaj7 | Amaj7 | Dmaj7 | Gmaj7 |",group:"Double time \u00b7 16th notes (concert C)",dsl:"C4/s D4 E4 F4 D4 E4 F4 G4 E4 F4 G4 A4 F4 G4 A4 B4 E5 D5 C5 Bb4 D5 C5 Bb4 A4 C5 Bb4 A4 G4 Bb4 A4 G4 F4 Bb3 C4 D4 Eb4 C4 D4 Eb4 F4 D4 Eb4 F4 G4 Eb4 F4 G4 A4 D5 C5 Bb4 Ab4 C5 Bb4 Ab4 G4 Bb4 Ab4 G4 F4 Ab4 G4 F4 Eb4 Ab4 Bb4 C5 Db5 Bb4 C5 Db5 Eb5 C5 Db5 Eb5 F5 Db5 Eb5 F5 G5 C5 Bb4 Ab4 Gb4 Bb4 Ab4 Gb4 F4 Ab4 Gb4 F4 Eb4 Gb4 F4 Eb4 Db4 Gb4 Ab4 Bb4 B4 Ab4 Bb4 B4 Db5 Bb4 B4 Db5 Eb5 B4 Db5 Eb5 F5 Bb4 Ab4 Gb4 E4 Ab4 Gb4 E4 Eb4 Gb4 E4 Eb4 Db4 E4 Eb4 Db4 B3 E4 Gb4 Ab4 A4 Gb4 Ab4 A4 B4 Ab4 A4 B4 Db5 A4 B4 Db5 Eb5 Ab4 Gb4 E4 D4 Gb4 E4 D4 Db4 E4 D4 Db4 B3 D4 Db4 B3 A3 D4 E4 Gb4 G4 E4 Gb4 G4 A4 Gb4 G4 A4 B4 G4 A4 B4 Db5 Gb5 E5 D5 C5 E5 D5 C5 B4 D5 C5 B4 A4 C5 B4 A4 G4",tip:"Double time: four 16th notes per beat. Start around 50% speed. For fast runs, check the alternate fingerings under the diagram: side B♭ for stepwise A–B♭–B, bis B♭ for leaps, side C for fast B–C, 1 & 1 B♭ next to F, chromatic F♯ next to F. The highlighted one is the suggested choice for that note."},
  {id:"bg-long",title:"Long tones · G A B C",bpm:60,ts:[4,4],tonic:3,wr:9,group:"Beginner exercises (written for alto)",dsl:"G4/w A4 B4 C5"},
  {id:"bg-mary",title:"Mary Had a Little Lamb · B A G",bpm:80,ts:[4,4],tonic:3,wr:9,group:"Beginner exercises (written for alto)",dsl:"B4/q A4 G4 A4 B4 B4 B4/h A4/q A4 A4/h B4/q D5 D5/h B4/q A4 G4 A4 B4 B4 B4 B4 A4 A4 B4 A4 G4/w"},
  {id:"bg-hcb",title:"Hot Cross Buns · B A G",bpm:80,ts:[4,4],tonic:3,wr:9,group:"Beginner exercises (written for alto)",dsl:"B4/q A4 G4/h B4/q A4 G4/h G4/e G4 G4 G4 A4 A4 A4 A4 B4/q A4 G4/h"},
@@ -560,7 +579,7 @@ const LIB=[
  {id:"bg-sync",title:"Eighth–quarter–eighth rhythm · G A B",bpm:80,ts:[4,4],tonic:3,wr:9,group:"Beginner exercises (written for alto)",dsl:"G4/e A4/q B4/e A4/e B4/q G4/e A4/e B4/q C5/e B4/e A4/q G4/e G4/e A4/q B4/e A4/e B4/q G4/e G4/h r/h"},
  {id:"bg-dotted",title:"Dotted quarter + eighth · G A B",bpm:80,ts:[4,4],tonic:3,wr:9,group:"Beginner exercises (written for alto)",dsl:"G4/q. A4/e B4/q. A4/e G4/q A4 G4/h"},
  {id:"bg-etude1",title:"Etude · Running in C (8 bars)",bpm:84,ts:[4,4],tonic:3,wr:9,group:"Beginner exercises (written for alto)",dsl:"C4/q E4 G4 E4 D4 F4 A4 F4 E4 G4 B4 G4 C5/h G4/h C4/e D4 E4 F4 G4/q E4 D4/e E4 F4 G4 A4/q F4 E4/e F4 G4 A4 B4/q G4 C5/q G4 E4 C4"}
-].map(d=>({id:d.id,title:d.title,bpm:d.bpm,ts:d.ts,tonic:d.tonic,units:normalize(parseDSL(d.dsl).map(n=>({...n,m:n.m-(d.wr||0)}))),chart:d.chart,group:d.group||'Warm-ups',builtin:true}));
+].map(d=>({id:d.id,title:d.title,bpm:d.bpm,ts:d.ts,tonic:d.tonic,units:normalize(parseDSL(d.dsl).map(n=>({...n,m:n.m-(d.wr||0)}))),chart:d.chart,group:d.group||'Warm-ups',tip:d.tip,builtin:true}));
 let custom=[];
 try{custom=JSON.parse(localStorage.getItem('saxtutor.songs')||'[]')}catch(e){}
 const saveCustom=()=>{try{localStorage.setItem('saxtutor.songs',JSON.stringify(custom));return true}catch(e){toast('Couldn’t save — browser storage is full');return false}};
@@ -614,7 +633,8 @@ const KEYGEO={
  Gs:{x:42,y:172,rx:11,ry:7,t:'G♯'},lowCs:{x:42,y:194,rx:11,ry:7,t:'C♯'},lowB:{x:42,y:216,rx:11,ry:7,t:'B'},lowBb:{x:42,y:238,rx:11,ry:7,t:'B♭'},
  lowEb:{x:124,y:296,rx:13,ry:7,t:'E♭'},lowC:{x:124,y:316,rx:13,ry:7,t:'C'},
  palmEb:{x:138,y:48,rx:10,ry:6,t:'pE♭'},palmD:{x:138,y:68,rx:10,ry:6,t:'pD'},palmF:{x:138,y:88,rx:10,ry:6,t:'pF'},
- sideE:{x:126,y:238,rx:8,ry:6,t:'sE'},highFs:{x:126,y:256,rx:8,ry:6,t:'sF♯'}
+ sideE:{x:126,y:238,rx:8,ry:6,t:'sE'},highFs:{x:126,y:256,rx:8,ry:6,t:'sF♯'},
+ sideBb:{x:148,y:204,rx:9,ry:6,t:'sB♭'},sideC:{x:148,y:224,rx:9,ry:6,t:'sC'}
 };
 function buildSax(){
   let h='<rect class="body" x="58" y="52" width="48" height="244" rx="22"/>';
@@ -628,11 +648,16 @@ function showFingering(keys){$$('#saxsvg .k').forEach(e=>e.classList.toggle('on'
 
 /* ---------- audio ---------- */
 let actx=null;
-let bus=null,noiseBuf=null;
+let bus=null,fx=null,noiseBuf=null;
 function ensureAudio(){
   if(!actx){
     actx=new(window.AudioContext||window.webkitAudioContext)();
     bus=actx.createGain();bus.gain.value=S.backVol/100;bus.connect(actx.destination);
+    fx=actx.createGain();fx.connect(bus);
+    try{const len=Math.floor(actx.sampleRate*1.3),ir=actx.createBuffer(2,len,actx.sampleRate);
+      for(let c=0;c<2;c++){const d=ir.getChannelData(c);for(let i=0;i<len;i++){const t=i/len;d[i]=(Math.random()*2-1)*Math.pow(1-t,3.2)*(t<.01?t/.01:1);}}
+      const cv=actx.createConvolver();cv.buffer=ir;const lpR=actx.createBiquadFilter();lpR.type='lowpass';lpR.frequency.value=5000;
+      const send=actx.createGain();send.gain.value=.26;fx.connect(send);send.connect(lpR);lpR.connect(cv);cv.connect(bus);}catch(e){}
     noiseBuf=actx.createBuffer(1,actx.sampleRate,actx.sampleRate);const d=noiseBuf.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=Math.random()*2-1;
   }
   if(actx.state==='suspended')actx.resume();return actx;
@@ -654,36 +679,65 @@ function vBass(at,dur,m,v){
   g.gain.setValueAtTime(.0001,at);g.gain.linearRampToValueAtTime(pk,at+.012);g.gain.exponentialRampToValueAtTime(pk*.4,at+d*.85);g.gain.linearRampToValueAtTime(.0001,at+d+.04);
   o.connect(lp);o2.connect(lp);lp.connect(g).connect(bus);o.start(at);o2.start(at);o.stop(at+d+.06);o2.stop(at+d+.06);
 }
+function jit(){return .9+Math.random()*.2;}
 function vKeys(at,dur,m,v){
-  const f=440*Math.pow(2,(m-69)/12),o=actx.createOscillator(),o2=actx.createOscillator(),lp=actx.createBiquadFilter(),g=actx.createGain(),g2=actx.createGain();
-  o.type='triangle';o2.type='sine';o.frequency.value=f;o2.frequency.value=f*2;g2.gain.value=.3;lp.type='lowpass';lp.frequency.value=Math.min(3000,f*6);
-  const end=at+Math.min(2,Math.max(.25,dur)+.3),pk=.28*v;
-  g.gain.setValueAtTime(.0001,at);g.gain.linearRampToValueAtTime(pk,at+.005);g.gain.exponentialRampToValueAtTime(.0001,end);
-  o.connect(lp);o2.connect(g2).connect(lp);lp.connect(g).connect(bus);o.start(at);o2.start(at);o.stop(end+.02);o2.stop(end+.02);
+  // electric-piano (tine) voice: FM pair with a decaying index, velocity-brightness, soft body
+  v*=jit();at+=Math.random()*.006;
+  const f=440*Math.pow(2,(m-69)/12),det=(Math.random()-.5)*6;
+  const car=actx.createOscillator(),mod=actx.createOscillator(),mg=actx.createGain(),
+        tine=actx.createOscillator(),tg=actx.createGain(),body=actx.createOscillator(),bg=actx.createGain(),
+        lp=actx.createBiquadFilter(),g=actx.createGain();
+  car.type='sine';car.frequency.value=f;car.detune.value=det;
+  mod.type='sine';mod.frequency.value=f;mod.detune.value=det;
+  const idx=(.7+1.9*v)*f*(f>600?.6:1),hold=Math.min(2.4,Math.max(.3,dur)+.4),end=at+hold+.25;
+  mg.gain.setValueAtTime(idx,at);mg.gain.exponentialRampToValueAtTime(Math.max(1,idx*.08),at+.9);
+  mod.connect(mg).connect(car.frequency);
+  tine.type='sine';tine.frequency.value=f*7;tg.gain.setValueAtTime(.05*v,at);tg.gain.exponentialRampToValueAtTime(.0001,at+.07); // bell "ting"
+  body.type='sine';body.frequency.value=f*.5;bg.gain.value=.12; // warm sub-octave
+  lp.type='lowpass';lp.frequency.value=Math.min(5000,900+f*4+v*1200);lp.Q.value=.4;
+  const pk=.3*v,dec=Math.max(.5,1.6-f/900);
+  g.gain.setValueAtTime(.0001,at);g.gain.linearRampToValueAtTime(pk,at+.004);
+  g.gain.exponentialRampToValueAtTime(pk*.45,at+Math.min(.35,dec*.25));
+  const rel=Math.max(at+.36,at+Math.min(dur,hold));
+  g.gain.setValueAtTime(pk*.45*Math.pow(.35,(rel-at-.35)/dec),rel);
+  g.gain.exponentialRampToValueAtTime(.0001,Math.max(end,rel+.2));
+  car.connect(lp);tine.connect(tg).connect(lp);body.connect(bg).connect(lp);lp.connect(g).connect(fx);
+  [car,mod,tine,body].forEach(o=>{o.start(at);o.stop(end+.03);});
 }
-function noiseHit(at,type,freq,q,dur,pk){
+function noiseHit(at,type,freq,q,dur,pk,att){
   const s=actx.createBufferSource(),f=actx.createBiquadFilter(),g=actx.createGain();
   s.buffer=noiseBuf;s.loop=true;f.type=type;f.frequency.value=freq;if(q)f.Q.value=q;
-  g.gain.setValueAtTime(pk,at);g.gain.exponentialRampToValueAtTime(.0001,at+dur);
-  s.connect(f);f.connect(g).connect(bus);s.start(at,Math.random()*.5);s.stop(at+dur+.02);
+  if(att){g.gain.setValueAtTime(.0001,at);g.gain.linearRampToValueAtTime(pk,at+att);}else g.gain.setValueAtTime(pk,at);
+  g.gain.exponentialRampToValueAtTime(.0001,at+dur);
+  s.connect(f);f.connect(g).connect(fx);s.start(at,Math.random()*.5);s.stop(at+dur+.02);
 }
 function toneHit(at,f0,f1,dur,pk,type){
   const o=actx.createOscillator(),g=actx.createGain();o.type=type||'sine';
   o.frequency.setValueAtTime(f0,at);o.frequency.exponentialRampToValueAtTime(f1,at+dur*.6);
-  g.gain.setValueAtTime(pk,at);g.gain.exponentialRampToValueAtTime(.0001,at+dur);o.connect(g).connect(bus);o.start(at);o.stop(at+dur+.02);
+  g.gain.setValueAtTime(pk,at);g.gain.exponentialRampToValueAtTime(.0001,at+dur);o.connect(g).connect(fx);o.start(at);o.stop(at+dur+.02);
+}
+// metallic cymbal body: a few inharmonic partials, high-passed, plus a noise "wash"
+function metal(at,base,n,dur,pk,hp,ping){
+  const R=[1,1.4,1.78,2.27,2.83,3.5],hpf=actx.createBiquadFilter(),g=actx.createGain();
+  hpf.type='highpass';hpf.frequency.value=hp;
+  g.gain.setValueAtTime(pk,at);g.gain.exponentialRampToValueAtTime(pk*.3,at+Math.min(.08,dur*.2));g.gain.exponentialRampToValueAtTime(.0001,at+dur);
+  hpf.connect(g).connect(fx);
+  for(let i=0;i<n;i++){const o=actx.createOscillator(),og=actx.createGain();o.type='square';o.frequency.value=base*R[i]*(1+(Math.random()-.5)*.01);og.gain.value=.16;o.connect(og).connect(hpf);o.start(at);o.stop(at+dur+.02);}
+  if(ping)toneHit(at,ping,ping*.98,.35,pk*.35); // stick "ping"
 }
 function drumHit(at,k,v){
+  v*=jit();at+=Math.random()*.005;
   switch(k){
-    case'kick':toneHit(at,140,45,.3,.95*v);break;
-    case'snare':noiseHit(at,'bandpass',1900,.7,.15,.5*v);toneHit(at,200,150,.09,.25*v,'triangle');break;
-    case'rim':noiseHit(at,'bandpass',2600,1.5,.035,.45*v);toneHit(at,900,600,.03,.2*v,'square');break;
-    case'hat':noiseHit(at,'highpass',7500,0,.055,.3*v);break;
-    case'ohat':noiseHit(at,'highpass',7000,0,.3,.28*v);break;
-    case'ride':noiseHit(at,'highpass',6000,0,.42,.15*v);toneHit(at,5200,5000,.2,.04*v);break;
-    case'crash':noiseHit(at,'highpass',4200,0,1.1,.3*v);break;
-    case'tom':toneHit(at,170,90,.32,.75*v);break;
-    case'conga':toneHit(at,330,250,.15,.55*v);break;
-    case'shaker':noiseHit(at,'bandpass',6500,1,.07,.22*v);break;
+    case'kick':toneHit(at,150,62,.36,1.0*v);toneHit(at,260,95,.16,.55*v,'triangle');noiseHit(at,'bandpass',1800,.8,.03,.35*v);break; // audible on small speakers: mid-range punch + beater click
+    case'snare':noiseHit(at,'bandpass',3200,.6,.22,.34*v,.012);noiseHit(at,'highpass',6000,0,.12,.1*v,.01);toneHit(at,190,140,.1,.16*v,'triangle');break; // brush swish
+    case'rim':noiseHit(at,'bandpass',2400,1.8,.04,.4*v);toneHit(at,820,600,.04,.14*v,'triangle');break;
+    case'hat':metal(at,330,4,.06,.2*v,7000);noiseHit(at,'highpass',8500,0,.035,.12*v);break; // chick
+    case'ohat':metal(at,330,5,.4,.16*v,6500);noiseHit(at,'highpass',8000,0,.3,.07*v);break;
+    case'ride':metal(at,420,4,.75,.13*v,5200,3400);noiseHit(at,'highpass',7500,0,.5,.035*v);break; // ping + shimmer
+    case'crash':metal(at,360,6,1.5,.16*v,4200);noiseHit(at,'highpass',3800,0,1.3,.18*v,.004);break;
+    case'tom':toneHit(at,190,88,.38,.55*v);noiseHit(at,'bandpass',1500,1,.025,.1*v);break;
+    case'conga':toneHit(at,360,255,.18,.45*v,'triangle');noiseHit(at,'bandpass',2200,1.2,.02,.14*v);break;
+    case'shaker':noiseHit(at,'bandpass',6200,1.1,.09,.2*v,.015);break;
     default:noiseHit(at,'bandpass',3500,1,.05,.2*v);
   }
 }
@@ -1436,17 +1490,53 @@ function currentIdx(){
   return -1;
 }
 
+
+/* ---------- alternate fingerings (written pitch, first octave; octave-key notes reuse them) ---------- */
+const ALT={
+ 66:[{n:'Chromatic F♯',k:['B','A','G','F','highFs'],h:'Moving F↔F♯ or in chromatic runs'}],
+ 68:[{n:'G♯ with pinky down',k:['B','A','G','lowCs'],h:'In low-register runs where the pinky already holds C♯, B or B♭'}],
+ 70:[{n:'Side B♭',k:['B','A','sideBb'],h:'Stepwise: A–B♭–A, A–B♭–C or A–B♭–B'},
+     {n:'1 & 1',k:['B','F'],h:'Moving between F and B♭'},
+     {n:'1 & 3',k:['B','G'],h:'Fast with G (darker tone)'}],
+ 72:[{n:'Side C',k:['B','sideC'],h:'Fast B–C runs and trills (can sound flat)'},
+     {n:'A♭–C run',k:['A','G','Gs'],h:'Fast with A♭'}]
+};
+function altBase(w){return w>73&&w<=85?w-12:w;}
+function altsFor(w){const b=altBase(w),l=ALT[b];if(!l||w<HORN_LO||w>85)return[];return l.map(a=>({n:a.n,h:a.h,k:b===w?a.k:['oct',...a.k]}));}
+function suggestAlt(ci){
+  const n=notes[ci],w=wr(n),pc=((w%12)+12)%12;
+  const nb=new Set();for(const j of[ci-1,ci+1]){if(notes[j])nb.add(((wr(notes[j])%12)+12)%12);}
+  if(pc===10){if(nb.has(8)&&nb.has(0))return null;if(nb.has(9)||nb.has(11)||nb.has(0))return'Side B♭';if(nb.has(5))return'1 & 1';}
+  if(pc===0){if(nb.has(11))return'Side C';if(nb.has(8))return'A♭–C run';}
+  if(pc===6&&nb.has(5))return'Chromatic F♯';
+  return null;
+}
+let altOn=-1;
+function renderAlts(ci,w){
+  const el=$('#altRow');altOn=-1;
+  const list=S.instr==='concert'||ci<0?[]:altsFor(w);
+  if(!list.length){el.innerHTML='';return;}
+  const sg=suggestAlt(ci);
+  el.innerHTML='<span class="lab">Alternate fingerings</span>'+list.map((a,i)=>`<button class="altchip${a.n===sg?' sug':''}" data-alt="${i}" title="${a.h}">${a.n}</button>`).join('')+
+    `<div id="altHint">${sg?'Suggested here: <b>'+sg+'</b>. ':''}Tap one to see it on the diagram.</div>`;
+  el.querySelectorAll('.altchip').forEach(b=>b.addEventListener('click',()=>{
+    const i=+b.dataset.alt;
+    if(altOn===i){altOn=-1;showFingering(fingeringFor(w));}else{altOn=i;showFingering(list[i].k);$('#altHint').textContent=list[i].n+': '+list[i].h+'.';}
+    el.querySelectorAll('.altchip').forEach(x=>x.classList.toggle('on',+x.dataset.alt===altOn));
+  }));
+}
+
 /* ---------- fingering panel ---------- */
 let fingKey='';
 function updateFing(){
   const ci=currentIdx(),k=ci+'|'+shift()+S.instr+S.sharps;
   if(k===fingKey)return;fingKey=k;
   setNextHL(ci);
-  if(ci<0){$('#fingName').textContent='–';return;}
+  if(ci<0){$('#fingName').textContent='–';renderAlts(-1,0);return;}
   const n=notes[ci],w=wr(n),keys=S.instr==='concert'?null:fingeringFor(w);
   $('#fingName').textContent=nameOf(w);
   $('#fingSub').textContent=S.instr==='concert'?'concert pitch':'sounds '+nameOf(n.m+shift());
-  showFingering(keys);
+  showFingering(keys);renderAlts(ci,w);
   let warn='';
   if(S.instr==='concert')warn='Pick your horn to see fingerings';
   else if(w>HORN_HI)warn='Above written F♯6 (altissimo) — see your chart';
@@ -1816,7 +1906,7 @@ function syncUI(light){
   $('#swing').value=S.swing;$('#swingVal').textContent=S.swing+'%'+(song&&!song.swingable?' (n/a: triplets)':(useFileBand()?' (n/a: band)':''));
   $('#swing').disabled=!!song&&(!song.swingable||useFileBand());
   $('#latency').value=S.latency;$('#latVal').textContent=S.latency+' ms';
-  $('#songSel').value=song.id;$('#songInfo').textContent=`${song.ts[0]}/${song.ts[1]} · ${nBars} bars · ${notes.length} notes · ${song.bpm} BPM original`;
+  $('#songSel').value=song.id;$('#songInfo').textContent=`${song.ts[0]}/${song.ts[1]} · ${nBars} bars · ${notes.length} notes · ${song.bpm} BPM original`;$('#songTip').textContent=song.tip||'';
   $('#btnDel').style.display=song.custom?'':'none';
   $$('#viewbar [data-view]').forEach(b=>b.classList.toggle('on',b.dataset.view===S.view));
   updateLoopMarks();showProgress();setStatus();fingKey='';saveS();
