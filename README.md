@@ -1,127 +1,86 @@
-# 🎷 Sax Tutor
+# Bass Tutor
 
-A browser-based practice app for saxophone, built for working through jazz licks. Follow along with scrolling colour-coded notes or standard notation, slow things down, loop tricky bars, and get scored live from a MIDI wind controller (such as the Roland Aerophone AE-20) or a microphone.
+A browser-based practice app for bass guitar, built around jazz walking bass lines. See exactly where your fingers go, loop the hard bars, practice in all 12 keys, and play along with MIDI backing tracks or a generated rhythm section.
 
-It's a single `index.html` file with no dependencies and no build step.
+Everything lives in one file, `index.html`. There is no build step and there are no dependencies.
+
+![Bass Tutor showing the fretboard, scrolling tab and chord chart](screenshot.png)
 
 ## Features
 
-- **Game view**: colour-coded notes scroll toward a hit line, with a fingering diagram for the current and upcoming notes. Each note is graded Perfect, Good, OK, Missed or Wrong, with combo and timing stats.
-- **Fingering view**: the staff on top with note letters, and below it one lane per key (octave key, left hand, right hand, side and pinky keys). Blocks scroll toward circles that light up when that key should be down, so the fingers line up with the notes as they arrive.
-- **Notation view**: a staff with a moving playhead and optional note letters above or below. Tap a bar to set the loop start and another to set the end.
-- **Step through**: move one note at a time with the Prev/Next buttons or the arrow keys, hearing each note. Tick "Advance when I play it" to move on whenever you play the note shown.
-- **Practice tools**: speed from 25% to 150%, bar-range looping, count-in, metronome, "Hear the lick", "Wait for me" mode, and swing.
-- **Practice all keys**: run a lick around the circle of 4ths, up by semitone or whole tone, or down in 4ths. The register refits to your horn each time.
-- **Horn selection**: alto, tenor, soprano, baritone or concert pitch. Notation, note names and fingerings follow the horn you choose.
-- **Backing track**: chords appear above the notes in every view, transposed for your horn. The app plays a generated walking bass, piano comping and drums from the chord chart in Swing, Ballad or Bossa styles. The keys are a warm electric-piano voice, the drums use brush-style snare, a ride cymbal with shimmer and a chick hi-hat, and everything sits in a light synthetic room reverb with slight human timing and volume variation. All of it is synthesized in the browser, with no sound files. For an imported MIDI file with other tracks, it can play the original band instead, and it detects a first-draft chord chart from the piano and bass. Edit chords any time with **✏ Chords…**.
-- **Import**: MIDI (`.mid`), MusicXML (`.xml`, `.musicxml`) and compressed MusicXML (`.mxl`), or type a lick directly.
-- **Progress tracking** (📈 Progress): per-lick history with an accuracy-by-pass chart, best accuracy at each speed, a goal tempo with a "mastered" mark (90%+ twice at your goal), practice time and streak. A **bar-by-bar trouble-spot map** shows where you miss or play wrong notes, and you can tap bars to loop them or use "Loop my weakest bars". The app suggests a next step (speed up, slow down, or focus on weak bars) and reports whether you tend to play early or late, with a one-tap latency adjustment. Export and import your progress as a file. Everything is saved in your browser.
-- **Imported licks** are saved in your browser too.
+**See the line**
+- **Fretboard:** shows the current note and the next few, with the left-hand finger on each marker. Markers can show finger numbers, note names or chord degrees (R, 3, 5, ♭7). A whole-bar mode shows all of a bar's notes in order.
+- **Tab highway:** notes scroll toward a hit line, with the fret number on each.
+- **Notation:** bass clef, written an octave above sounding pitch, with tab numbers underneath.
+- **Chord chart:** the current bar is highlighted. Click bars to set a loop.
+- **Fingering optimizer:** picks the string, fret and finger for each note to minimize shifting. To change a note, pause and click it in the tab view to cycle through its other positions.
 
-## Getting started
+**Songs**
+- **MIDI import:** load a `.mid` file (or drop one on the page). The bass track is detected automatically, and you can pick any other track instead. The remaining tracks and drums play as the backing.
+- **Chords:** guessed from the other tracks, and editable in the Song panel.
+- **Walking-bass generator:** type a chord chart such as `Dm7 | G7 | Cmaj7`, or pick a preset (jazz blues, ii–V–I, Autumn Leaves changes, rhythm changes, minor blues, bossa). You get a walking, two-feel or bossa line with piano and drums. "New variation" rolls a different line over the same chords, and you can export the result as MIDI.
 
-1. Open the page in **Chrome or Edge** (desktop or Android). Safari does not support Web MIDI.
-2. Choose your horn under **Horn & key**.
-3. Pick a lick and press **Start** (or `Space`).
+**Lessons**
+- **Lesson phrases:** 18 short bebop-style phrases, all written in C and playable in any key. Press **Lessons**, pick a key, and the phrase loops with piano and drums behind it.
+- **Bebop scales:** dominant (Mixolydian + natural 7), major (+ ♯5) and minor/Dorian (+ natural 7), each played up from the root and back down. The passing tone keeps the chord tones on beats 1 and 3.
+- **Building blocks:** arpeggios with chromatic approach notes, enclosures, scale fragments across a ii–V–I, a minor ii–V–i, a iii–vi–ii–V turnaround and a blues phrase.
+- **More vocabulary:** four minor ii–V–i lines, and a Rhythmic variations group (long–short pairs, triplet pick-ups, a two-feel that turns into walking, and eighth-note bebop scales).
+- Each phrase comes with a short note on what to listen for. Turn on chord-degree labels (R, 3, 5, ♭7…) to see how the line outlines the chords, and use "all 12 keys" to move up a fourth every pass.
 
-### Using a MIDI wind controller
+**Sound**
+- Backing band is pure Web Audio synthesis (no samples): FM electric piano, brush-style snare, metallic hats and ride, and a kick that stays audible on phone speakers, with a light room reverb (Mixer → *Room reverb*) and slight random timing and volume variation on keys and drums.
 
-1. Connect the instrument by USB or Bluetooth MIDI, then press **Connect MIDI** and allow access.
-2. Press **Calibrate MIDI** and play the highlighted note. This corrects any octave or transposition difference between your instrument and the app.
-3. If hits consistently read early or late, adjust the **Latency** slider.
+**Practice tools**
+- **Key cycling:** after each loop pass, stay in the key or move up/down a fourth (cycle of 4ths/5ths), a half or whole step, a minor third or a tritone. Choose how many loop passes to play in each key, and optionally speed up by 5% or 10% at each key change (up to 150%; your speed returns when you stop).
+- Loop any bar range, slow the tempo down to 25%, and use a count-in and metronome.
+- Transpose, or have the loop move up a fourth (or another interval) each pass to cover all 12 keys. Fingering is recalculated for each key.
+- Mixer: mute the bass to play it yourself, or solo it to study it.
+- Tunings: standard, drop D, half-step down and 5-string. Fret count and left-handed flip are adjustable.
 
-### Using a microphone
+**Optional listening**
+- Turn on **Listen** to detect the pitch of your bass through an audio interface or microphone.
+- Notes are scored Perfect / Good / OK / Missed / Wrong, with timing in milliseconds.
+- Includes latency calibration, "Wait for me" mode, a progress log and CSV export.
 
-Press **Mic** and allow access. Use headphones so the app's own playback isn't picked up. Mic mode detects pitch changes, so repeated notes on the same pitch aren't registered.
+## Using it
 
-### No instrument connected
-
-For testing, the computer keyboard works as a fallback: `A S D F G H J K` are the white keys, `W E T Y U` the black keys, and `Z` / `X` change octave.
-
-## Chord charts
-
-In **✏ Chords…**, write bars separated by `|`, in concert pitch:
-
-```
-| Dm7 | G7 | Cmaj7 | Cmaj7 |
-```
-
-Two chords in a bar share it evenly. Give beats with a colon (`Dm7:3 G7:1`), or use `%` as its own bar to repeat the previous bar. Common symbols like `m7b5`, `dim7`, `7#9`, `13`, `sus4` and slash chords (`Ebmaj7/G`) are understood. Tick "Repeat the chart to fill the song" to loop a short chart over a longer lick.
-
-## Typing a lick
-
-Use **Import / type a lick** and enter notes as `NoteOctave/length`:
-
-```
-D4/e F4 A4 C5 B4 G4 E4 C4/q r/q
-```
-
-| Code | Meaning |
-|------|---------|
-| `w` `h` `q` `e` `s` | whole, half, quarter, eighth, sixteenth |
-| `t` | triplet eighth |
-| `.` after a length | dotted (for example `q.`) |
-| `#` / `b` after the letter | sharp / flat (for example `F#4`, `Bb3`) |
-| `r` | rest |
-
-A length carries over to following notes until you change it. Use `|` as an optional bar separator.
-
-## Importing files
-
-- **Fingerstyle / solo arrangements** (one track with melody, chords and bass together, like guitar tabs exported from Guitar Pro): the importer detects this, keeps the top notes as the melody, and plays the notes underneath as the backing band, with chords detected from them.
-- **MIDI**: if the file has several tracks, the app picks the most likely melody track (by name, single-note lines and range). You can change it in the track menu. Where notes overlap, the highest note is kept.
-- **MusicXML**: if the file contains a transposition (for example an alto sax part), it is applied automatically. Chord symbols (`<harmony>`) in the file are read into the chord chart, so they show above the notes and drive the backing band. They follow the same *Pitches are* setting as the notes. You can still change them with ✏ Chords….
-- Choose whether the file's pitches are **concert pitch** or **written for your horn**.
-
-Timing is snapped to a sixteenth or triplet-eighth grid so the notation stays readable.
-
-### Fixing mistakes (scanned music)
-
-Music that was converted from a PDF or photo by a scanning program (for example Audiveris, MuseScore or PlayScore) usually has a few wrong notes. Open the lick, switch to the notation view and press **✎ Edit notes**. Tap a note, compare it with your page, then change its pitch (♯/♭ or octave), make it shorter or longer, move it a sixteenth earlier or later, add a note after it, or delete it. **Undo** goes back one step, and edits are saved on your device. If you edit a built-in lick, the app edits a copy.
-
-## Built-in practice lines
-
-The lick menu is grouped:
-
-- **Warm-ups**: scales, a blues lick, a ii–V–I pattern and a chromatic exercise.
-- **Bebop & enclosures (concert C)**: twelve original lines with chords: bebop scales, enclosures of the root, 3rd and 5th, a minor ii–V–i, chromatic approach notes, a ♭9 cell, a turnaround and a blues phrase.
-- **Bebop · minor & dominant**: seven lines on minor 7, minor 6, minor blues, dominant arpeggio, diminished, altered and mixolydian sounds.
-- **Bebop · triplets**: five triplet lines, including an enclosure and a turnaround.
-- **Bebop etudes**: four longer pieces with changes: ii–V–Is in three keys (8 bars), a 12-bar bebop blues, a triplet etude and a minor ii–V–i etude.
-- **Modes (concert C)**: Ionian, Dorian, Phrygian, Lydian, Mixolydian, Aeolian and Locrian, each as a one-octave scale up and down on C with its chord (Cmaj7, Cm7, Cm7♭9, Cmaj7♯11, C7, Cm7, Cm7♭5), so the characteristic notes stand out. A last piece runs through all seven modes of C major, each from its own root.
-- **Circle of 5ths & 4ths (concert)**: eight exercises that move through all 12 keys inside the piece, one bar per key, each with chords for the backing band: major scales around the circle of 5ths and of 4ths, mixolydian scales over dominant 7ths, dorian scales over minor 7ths, maj7, dominant 7 and minor 7 arpeggios, and a 24-bar ii–V–I through every key. Click a bar to loop just that key.
-- **Double time · 16th notes (concert C)**: ten exercises with four notes per beat over the same changes: diatonic groups of four, scales in thirds, arpeggios, enclosures, a bebop scale, blues and minor phrases, and two scale cycles through all 12 keys. The tempo starts at 70; use the Speed slider to go slower.
-- **Beginner exercises (written for alto)**: long tones, scales, arpeggios, rhythm patterns, simple folk tunes (Hot Cross Buns, Mary Had a Little Lamb, Twinkle Twinkle, Ode to Joy and others) and an 8-bar etude, printed the way a beginner alto book writes them. The Key menu shows concert key names, so the original key appears as E♭.
-
-Use the **Key** menu, or **Practice all keys**, to play any line in every key. The same lines are also provided as MusicXML files (`Sax-Tutor-practice-lines.zip`) that can be added one at a time with **＋ Import / type a lick**.
-
-## Alternate fingerings
-
-Under the fingering diagram, notes that have common alternate fingerings show small buttons: **side B♭**, **1 & 1** and **1 & 3** for B♭; **side C** and **A♭–C run** for C; **chromatic F♯**; and **G♯ with the pinky down**. Tap one to see it on the diagram, and tap it again to go back. The button with the orange outline is the one the app suggests from the neighbouring notes: side B♭ for stepwise motion (A–B♭–A, A–B♭–C), 1 & 1 next to F, side C next to B, chromatic F♯ next to F, and the regular fingering for leaps. The alternates come from published saxophone alternate-fingering charts and are the same on every saxophone, except that a few feel better on some horns, so treat the suggestion as a starting point. Some lines, such as the double-time exercises, add a short fingering tip under the song info.
-
-## Phones and tablets
-
-- **Android (Chrome):** MIDI works over USB-OTG or Bluetooth MIDI, the same as on a computer.
-- **iPhone and iPad:** Safari and Chrome on iOS don't support Web MIDI. A browser app that adds it (for example MidiWeb) lets a MIDI controller connect, so open the app's address inside that browser. The microphone mode also works in any iOS browser.
-- On narrow screens the controls collapse into tappable cards, and Start/Pause/Stop, speed and note stepping stay pinned at the bottom. The screen is kept awake while you play where the browser allows it.
-- Home-screen "web app" mode on iOS uses Safari's engine and has no MIDI, so use a browser tab instead.
-
-## Keyboard shortcuts
+Open `index.html` in Chrome or Edge. Press **Start** (or `Space`).
 
 | Key | Action |
-|-----|--------|
+|---|---|
 | `Space` | Start / pause |
 | `Esc` | Stop |
-| `V` | Cycle through game, fingering and notation views |
-| `←` / `→` | Step to the previous / next note |
+| `V` | Switch tab / notation view |
+| `L` | Toggle loop |
+| `[` `]` | Slower / faster |
+| `M` | Mute bass |
+
+Click a bar in the notation or chord chart to set the loop start, then click a second bar to set the end. The phrases are also listed in the song menu under "Lesson phrases".
+
+### Listening setup
+- An audio interface connected to your bass gives the best results. A microphone near the amp also works.
+- Use headphones so the backing track doesn't feed back into the input.
+- Run **Calibrate latency** once for your setup.
+- Audio input needs a secure context, so it works on `https://` sites (such as Netlify) and `localhost`.
+
+## Deploying
+
+It is a static site, so any static host works.
+
+**Netlify (from GitHub):** add the repo with **Add new site → Import an existing project**, leave the build command empty and set the publish directory to `.`. Every commit to `main` redeploys.
+
+**Netlify (manual):** drag the folder onto **Add new site → Deploy manually**.
 
 ## Limitations
 
-- Fingerings cover written B♭3 to F♯6, including the palm keys and side E / high F♯ keys. Altissimo notes above that show a "see your chart" message.
-- Imported scores are reduced to a single melodic line. Repeats, voltas and grace notes are ignored.
-- Only partwise MusicXML is supported.
-- Web MIDI and microphone access require a browser and hosting that allow them (a normal web page, not an embedded preview).
+- Tempo and time-signature changes inside a MIDI file are not followed. The first ones are used.
+- Chord detection is approximate and works best with full chord voicings in the backing tracks. Check the result and correct it in the Song panel.
+- Songs, settings and progress are stored in the browser (`localStorage`), so they stay on that device and browser.
+- Not installable or usable offline.
 
-## Running locally
+## Tech notes
 
-Open `index.html` in a browser, or serve the folder with any static server. To publish, host the file on any static host such as Netlify, GitHub Pages or Cloudflare Pages.
+- Plain HTML, CSS and JavaScript. Audio is a Web Audio synthesizer (bass, harmony, drums, click) with a look-ahead scheduler.
+- MIDI parsing and writing are built in.
+- Pitch detection uses the YIN algorithm on the input stream, with RMS onset detection.
+- Fingering is a dynamic-programming search over string and fret positions.
